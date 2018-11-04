@@ -1,0 +1,631 @@
+WEBVTT
+
+00:00.390 --> 00:06.030
+And you're here with an expect upgrade guide as promised this bonus video is going to show you how to
+
+00:06.030 --> 00:11.460
+upgrade from expect a version one to expect a version at twenty one.
+
+00:11.460 --> 00:14.560
+Now there were not 19 other versions in between.
+
+00:14.640 --> 00:16.460
+Expect it changed owners.
+
+00:16.470 --> 00:23.600
+So it went from a V-1 version right to a 20 version and now we are at v 21.
+
+00:23.610 --> 00:26.410
+So that's the one that we're going to be using in this video.
+
+00:26.490 --> 00:32.220
+I'm going to show you how to upgrade the entire test suite to the new version of expect at the end all
+
+00:32.280 --> 00:36.130
+of our test cases will still be passing but using this brand new version.
+
+00:36.270 --> 00:41.890
+Now before we dive into the code at all I do want to make you aware of where you can find the new documentation.
+
+00:41.940 --> 00:44.120
+Now the API eyes are so similar.
+
+00:44.190 --> 00:50.310
+We're really only going to need to change a few of our expect calls quite a few of them are not going
+
+00:50.310 --> 00:51.870
+to change at all.
+
+00:52.020 --> 00:59.820
+So I'm going to switch over to the browser and we're going to head over to the M. Jackson expect documentation.
+
+00:59.820 --> 01:06.570
+This is the documentation we've already been using and we're going to pull up in another tab the just
+
+01:06.900 --> 01:08.840
+expect documentation.
+
+01:09.000 --> 01:15.180
+So just is another testing framework like Moka though just is mostly geared towards people who are doing
+
+01:15.180 --> 01:17.890
+client side testing things like react.
+
+01:17.900 --> 01:20.800
+J.S. for example we're not going to be switching to geste.
+
+01:20.820 --> 01:26.360
+We are just going to be using the expect package which happens to be documented on this site.
+
+01:26.400 --> 01:31.400
+So when we head over here we can see we have access to an API that should look pretty familiar.
+
+01:31.400 --> 01:36.870
+If I scroll down to one of the first examples you can see we call expect we pass something in and we
+
+01:36.870 --> 01:38.790
+make an assertion about it.
+
+01:38.790 --> 01:44.800
+So a lot of our existing assertions including ones using to be are not going to change at all.
+
+01:44.820 --> 01:48.210
+There are just a few name changes and that's really it.
+
+01:48.210 --> 01:50.310
+We do not need to change a ton of code.
+
+01:50.310 --> 01:53.820
+We just have to change a few things to get things working.
+
+01:54.120 --> 01:59.790
+Now the old documentation does show this as part of the documentation they show you that the ownership
+
+01:59.820 --> 02:05.100
+has switched it's been donated to just so all future documentation will be over there and that's exactly
+
+02:05.100 --> 02:06.360
+where we are right now.
+
+02:06.370 --> 02:12.220
+So this is the docs that you would use going forward if you are going to upgrade to the twenty one.
+
+02:12.270 --> 02:15.550
+The first thing we are going to do is upgrade to the latest version.
+
+02:15.570 --> 02:21.420
+So if I do go ahead and google NPM expect that's going to bring us over to the package page.
+
+02:21.570 --> 02:26.700
+And once we are there we'll be able to see that version 21 is the latest version and this is exactly
+
+02:26.700 --> 02:30.540
+what we're going to be using the twenty one point one point zero.
+
+02:30.540 --> 02:32.850
+So let's go ahead and actually get that installed.
+
+02:32.880 --> 02:35.300
+I'm going to switch over to the terminal.
+
+02:35.400 --> 02:39.570
+Now I do have mango D-B running in the background in this first tab.
+
+02:39.570 --> 02:43.860
+I'm going to run the installation command to get that version set up right here.
+
+02:43.860 --> 02:49.260
+That would be NPM install expect at the version that we just looked at.
+
+02:49.260 --> 02:52.020
+That is v 20 1.1 point zero.
+
+02:52.350 --> 02:53.400
+Twenty one point one.
+
+02:53.400 --> 02:54.390
+Point zero.
+
+02:54.390 --> 03:00.840
+And I will use the save dev flag to make sure to save the new version as a development dependency.
+
+03:00.840 --> 03:04.620
+Now once we run this it's going to go through the process of actually installing the new code in our
+
+03:04.620 --> 03:05.440
+project.
+
+03:05.610 --> 03:11.040
+And if we switch over to Adam to take a look at exactly what changed we can see that right now under
+
+03:11.040 --> 03:16.270
+Debb dependencies we are viewing the new version as opposed to the one.
+
+03:16.350 --> 03:20.610
+Now with this in place we can go ahead and just run the test suite something that would have worked
+
+03:20.610 --> 03:27.030
+before we ran this command with NPM test and we are going to see quite a few failures.
+
+03:27.060 --> 03:32.410
+We're going to see failures related to us using expect methods that do not exist.
+
+03:32.460 --> 03:37.980
+Right here you can see we have seven failures for example we have to not exist is not a function to
+
+03:38.010 --> 03:39.480
+exist is not a function.
+
+03:39.540 --> 03:41.050
+We have the same two again.
+
+03:41.190 --> 03:42.810
+Right here we have to be a.
+
+03:42.930 --> 03:44.450
+So we see there are about three.
+
+03:44.460 --> 03:50.400
+In reality there are a few more that are hidden methods that we're going to need to make changes to.
+
+03:50.490 --> 03:57.300
+So all we have to do essentially is rename these to the compatible method from the new version of expect.
+
+03:57.300 --> 03:58.980
+So let's go ahead and dive into our code.
+
+03:58.980 --> 04:02.670
+We're going to be working with the server test file where all of our test cases live.
+
+04:02.670 --> 04:08.220
+It's important to remember that the expect a library is only responsible for these calls when we actually
+
+04:08.220 --> 04:13.530
+use the global expect variable if we're using the expect method that is coming from super test and we
+
+04:13.530 --> 04:15.590
+do not need to make any tweaks to those.
+
+04:15.600 --> 04:21.500
+So right here for example we have our very first one we expect the body text to be the variable tax
+
+04:21.520 --> 04:22.580
+death or the same great.
+
+04:22.590 --> 04:24.140
+If not we have a problem.
+
+04:24.240 --> 04:30.150
+And this is one of the test cases that does not need to change if we head over to the documentation
+
+04:30.630 --> 04:32.800
+for the new expect version.
+
+04:32.940 --> 04:37.980
+We can scroll down through the methods we can see that we do have to be it should be sitting down here
+
+04:37.980 --> 04:38.780
+somewhere.
+
+04:38.850 --> 04:44.540
+It looks like it is right here and it to be is described exactly as it was in V-1.
+
+04:44.610 --> 04:48.300
+We take two things and we compare them using strict equality.
+
+04:48.450 --> 04:51.560
+So we need to make any changes to that particular assertion.
+
+04:51.690 --> 04:55.450
+All instances of that one can stay in place if we continue to scroll down.
+
+04:55.470 --> 04:58.320
+We have a couple of more newbies those don't need to change.
+
+04:58.320 --> 05:01.750
+If we move on to the test cases we have quite a few to BS.
+
+05:01.780 --> 05:06.290
+So we're doing pretty well so far right here just to BS all the way down.
+
+05:06.310 --> 05:08.970
+Once again no actual expect calls.
+
+05:08.980 --> 05:10.680
+Just using super test.
+
+05:10.690 --> 05:14.470
+We're going to continue moving down looking for that first one and it's actually going to come right
+
+05:14.470 --> 05:19.420
+here when we start describing how the delete method works down below.
+
+05:19.420 --> 05:21.120
+Well we do used to be.
+
+05:21.190 --> 05:27.790
+We also use to not exist and this is one of the ones we saw that no longer exists ironically to not
+
+05:27.850 --> 05:30.290
+exist has been renamed.
+
+05:30.310 --> 05:34.890
+So when we're using jast we're not going to have access to to not exist or to exist.
+
+05:34.960 --> 05:40.630
+Instead over inside of the expect documentation if I scroll up to the top we're going to be using to
+
+05:40.630 --> 05:47.590
+be falsie or to be Sruthi where to be falsie is the equivalent of to not exist and to be truthy is the
+
+05:47.590 --> 05:49.710
+equivalent of to exist.
+
+05:49.720 --> 05:59.170
+So that means over inside of our code we have to do is swap out to not exist for it to be falsie to
+
+05:59.230 --> 06:05.980
+be fallacy is going to throw an error if the thing passed in is not falce in which case we have a problem
+
+06:06.130 --> 06:10.660
+if it is falce something like Knol undefined then we're going to go and then is going to work with this
+
+06:10.660 --> 06:12.140
+particular test case.
+
+06:12.160 --> 06:16.900
+So this test case is actually all cleaned up and if we save the server test file I should be able to
+
+06:16.900 --> 06:22.620
+rerun the test suite from the terminal and we should see less than seven failing test cases.
+
+06:22.630 --> 06:24.720
+Once again we're moving through the entire test suite.
+
+06:24.730 --> 06:29.890
+We do still have some failures this time around though you can see it is just six test cases.
+
+06:29.980 --> 06:31.840
+So let's keep on moving down the list.
+
+06:31.870 --> 06:37.930
+If we scroll down to the very next test case we can see we do use to exist which no longer exists for
+
+06:37.930 --> 06:45.700
+this one we want to use to be truthy and this is going to allow us to make the correct assertion I'm
+
+06:45.700 --> 06:49.480
+going to scroll down to the next test case in here we don't use expect at all.
+
+06:49.480 --> 06:55.270
+Same with the one down below that then we come up to our patch related test cases and in the very first
+
+06:55.270 --> 06:59.680
+one we do have a few assertions using expect we use to be twice.
+
+06:59.680 --> 07:00.930
+And those are fine.
+
+07:01.090 --> 07:05.620
+But we also use to be a to be a no longer exists.
+
+07:05.710 --> 07:11.740
+And there really is no equivalent in terms of making an assertion using the new version of expect.
+
+07:11.740 --> 07:17.350
+So to fix this we're just going to use the type of operator a core javascript feature to get the type
+
+07:17.350 --> 07:18.370
+for value.
+
+07:18.460 --> 07:21.640
+And then we'll just use to be to assert something about it.
+
+07:21.640 --> 07:26.950
+I'm going to comment out this particular test case and below if you don't remember we just use type
+
+07:26.950 --> 07:27.440
+of.
+
+07:27.490 --> 07:28.530
+Followed by something.
+
+07:28.540 --> 07:35.290
+So it could be the string Andrew or a variable whose value is a string and the result would be string.
+
+07:35.360 --> 07:41.600
+If I did type of true for example the result of that one would be the string boolean.
+
+07:41.600 --> 07:45.560
+So we're going to be able to get that type back as a string for anything in this case we are hoping
+
+07:45.560 --> 07:48.060
+the type of is a number.
+
+07:48.080 --> 07:53.060
+So right here we are going to use expect and we're still going to expect something about completed at
+
+07:53.330 --> 07:55.870
+we're just going to use the type of operator up front.
+
+07:55.940 --> 08:01.260
+So we're going to get the type of it completed and then we'll make an assertion about that type of response.
+
+08:01.270 --> 08:05.590
+Dot a body dot to do dot completed at.
+
+08:05.630 --> 08:07.570
+If that type of is a number.
+
+08:07.580 --> 08:08.090
+Great.
+
+08:08.120 --> 08:11.600
+So we're going to use to be number to make that assertion.
+
+08:11.660 --> 08:16.940
+If it's not a number then we have a problem this assertion will fail and the test case will fail.
+
+08:16.940 --> 08:21.710
+So with this one in place we are all done and now I am going to go ahead and rerun the test suite to
+
+08:21.710 --> 08:24.500
+at least make sure we are making a little bit of progress.
+
+08:24.500 --> 08:29.720
+Last time we ran it we had six failing test cases this time around we should have about four.
+
+08:29.810 --> 08:36.020
+But here we do indeed have four which means we are ready to continue on migrating away from expect V-1
+
+08:36.200 --> 08:38.320
+and towards expect v. 21.
+
+08:38.360 --> 08:43.460
+I'm going to keep moving down the list in the next test case we don't seem to use any custom assertions
+
+08:43.640 --> 08:44.820
+down below that one.
+
+08:44.840 --> 08:46.510
+We do have some custom assertions.
+
+08:46.610 --> 08:48.170
+We have to be twice.
+
+08:48.170 --> 08:52.640
+And we also have to not exist remember to not exist no longer exists.
+
+08:52.640 --> 08:56.250
+The equivalent would be to be falsie.
+
+08:56.270 --> 08:59.940
+Now that test case is all cleaned up and we can keep moving down the list.
+
+09:00.080 --> 09:04.460
+The next guy has a couple of assertions using to be no need for a change there.
+
+09:04.460 --> 09:08.970
+After that one we just have two equal and two equal is also the same.
+
+09:09.050 --> 09:12.920
+So remember to be users triple equals to compare two things.
+
+09:12.920 --> 09:18.180
+This does not work with objects two equal uses an algorithm to check all of the properties.
+
+09:18.200 --> 09:22.830
+This does work with objects and it also exists in the new version of expect.
+
+09:22.850 --> 09:28.340
+So you don't need to change any of our two equal calls down below if we can continue on down.
+
+09:28.340 --> 09:31.320
+We do have a test case with quite a few assertions.
+
+09:31.340 --> 09:35.730
+We start off with it to exist twice remember that no longer exists.
+
+09:35.750 --> 09:40.220
+The equivalent is to be truthy.
+
+09:40.220 --> 09:44.490
+We're going to use that here and we're also going to use it down below for the other one.
+
+09:45.380 --> 09:48.910
+And the third one is 2B which does not need to change.
+
+09:49.100 --> 09:53.960
+Down below we have a couple of more in this test case we have to exist once again which doesn't exist
+
+09:53.990 --> 09:56.180
+to be truth as we used above.
+
+09:56.180 --> 10:03.320
+And then we have to not be there actually is no equivalent for to not be in expect 21.
+
+10:03.350 --> 10:06.920
+So let's head over to the documentation and see what we can do about that.
+
+10:06.920 --> 10:14.060
+So we're going to be using instead is right here in dot not dot not lets us reverse and assertion so
+
+10:14.060 --> 10:19.500
+here they're expecting the return value from this function to not be the string coconut.
+
+10:19.520 --> 10:22.990
+If it's anything but coconut great if it is coconut.
+
+10:23.000 --> 10:27.970
+This test case will fail and we're going to use the exact same thing inside of our code.
+
+10:28.100 --> 10:33.410
+So if I switch over to Adam all we're going to do is switch this assertion to to B.
+
+10:33.410 --> 10:35.150
+This is the opposite of what we want.
+
+10:35.240 --> 10:37.930
+We're going to toss dot not up front.
+
+10:38.030 --> 10:43.520
+And now we have the correct assertion making sure that user dot password is not equal to the password
+
+10:43.580 --> 10:47.110
+variable and that should be it for this test case.
+
+10:47.150 --> 10:51.580
+I'm going to go ahead and save this one and continue down through the test cases in the next one.
+
+10:51.590 --> 10:55.760
+We do not use expect anywhere the same for the test case after it.
+
+10:55.760 --> 10:59.670
+Down here we do use expect we have to exist right here.
+
+10:59.720 --> 11:03.570
+Instead we will use to be truthy.
+
+11:03.570 --> 11:09.560
+Double-O we have a nother assertion and this is going to be one of the last tricky ones to include not
+
+11:09.620 --> 11:15.980
+in the expected 21 library but there is another way to get that done and we're going to look at that
+
+11:15.980 --> 11:16.630
+right now.
+
+11:16.760 --> 11:21.440
+So to include not going to work for our purposes let's head over to the Jeste docs and we're going to
+
+11:21.440 --> 11:24.760
+go way up to the top where we have the Table of Contents.
+
+11:24.770 --> 11:31.700
+Now if we scroll down the one that we're going to be looking for is to match object to match object
+
+11:31.940 --> 11:36.310
+expects that one object contains all of the properties from another.
+
+11:36.470 --> 11:41.780
+So here they're expecting something about the house for sale object and they're expecting it to match
+
+11:41.780 --> 11:43.900
+the object desired house.
+
+11:43.910 --> 11:49.660
+Now the properties aren't exactly the same but desired house is a subset of house for sale.
+
+11:49.730 --> 11:53.060
+It has everything up above except for bedrooms which is missing.
+
+11:53.150 --> 11:57.540
+And we also do not have the kitchen area property but that's OK.
+
+11:57.560 --> 11:59.420
+We're not expecting them to be equal.
+
+11:59.450 --> 12:03.440
+We're just expecting that this object contains all of the things outlined here.
+
+12:03.440 --> 12:06.770
+And that's exactly the sort of thing we're trying to do with our test case.
+
+12:06.770 --> 12:13.370
+Now there is one small quirk to this the old expect or version one was able to correctly parse out all
+
+12:13.370 --> 12:16.770
+of the stuff from mongoose that is on user.
+
+12:16.910 --> 12:19.170
+The new version is going to throw an error.
+
+12:19.190 --> 12:26.900
+So all we're going to do is use two object and two object is just going to return the raw user data
+
+12:27.060 --> 12:31.110
+with none of the internal methods or inner workings of mongoose present.
+
+12:31.130 --> 12:37.400
+This is just going to be the user object as we see it inside of the database now we're still going to
+
+12:37.400 --> 12:43.310
+be accessing the tokens array and we're still going to grab the second one instead of to include.
+
+12:43.310 --> 12:47.270
+We will be using to match object.
+
+12:47.360 --> 12:48.080
+And there we go.
+
+12:48.080 --> 12:50.440
+That is all we need to do for this one.
+
+12:50.480 --> 12:55.110
+So anytime we are trying to work with objects we can still get this sort of assertion done.
+
+12:55.130 --> 12:57.380
+We're just going to be using the new method.
+
+12:57.380 --> 13:01.970
+I'm going to switch back over to the terminal and I will rerun the test suite once again and see what
+
+13:01.970 --> 13:03.650
+sort of progress we've made.
+
+13:03.680 --> 13:08.170
+If my memory serves we should have just one failing test left to take care of.
+
+13:08.270 --> 13:10.520
+And it looks like I was correct.
+
+13:10.520 --> 13:14.280
+Right here we have one test case to not exist is being used.
+
+13:14.300 --> 13:16.040
+So we're going to have to go ahead and tweak that.
+
+13:16.130 --> 13:20.630
+Let's continue moving through the test case as it's actually sitting right here to not exist should
+
+13:20.630 --> 13:23.530
+be to be falsie.
+
+13:23.570 --> 13:30.530
+So as you can see the process of upgrading from expect one to expect 21 really isn't that bad.
+
+13:30.680 --> 13:34.290
+At its core they're both the exact same thing.
+
+13:34.310 --> 13:38.410
+They aim to solve the same problems and they solve them in very similar ways.
+
+13:38.420 --> 13:41.180
+We're really just talking about a difference in naming.
+
+13:41.210 --> 13:45.500
+So we have to switch the names around a little bit which can be annoying but now with just those few
+
+13:45.500 --> 13:51.560
+changes you are ready to continue using the latest version of expect throughout your node development
+
+13:51.650 --> 13:52.280
+career.
+
+13:52.280 --> 13:57.410
+We now have a completely passing test case and we're ready to continue on to the next section.
+
+13:57.410 --> 14:00.590
+Feel free to commit and deploy as you see fit.
+
+14:00.590 --> 14:04.730
+I'm not going to go through that process here since we have gone through that process plenty of times
+
+14:04.730 --> 14:05.580
+before.
+
+14:05.810 --> 14:07.750
+That is it for this bonus upgrade.
+
+14:07.760 --> 14:12.370
+Video Let's go ahead and dive back in to the regularly scheduled programming.

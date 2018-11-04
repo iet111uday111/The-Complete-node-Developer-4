@@ -1,0 +1,853 @@
+WEBVTT
+
+00:00.560 --> 00:05.530
+In this video you're going to learn how to turn your express routes into private routes.
+
+00:05.540 --> 00:08.250
+This means that will require an X off tokin.
+
+00:08.330 --> 00:13.400
+We're going to validate that tokin we're going to find the user associated with that token then and
+
+00:13.400 --> 00:16.610
+only then will you actually be able to run the route code.
+
+00:16.610 --> 00:18.870
+Now we're going to be making a lot of routes private.
+
+00:18.890 --> 00:23.690
+So what I want to do is make it as easy as possible to take a route like this one and turn it into a
+
+00:23.690 --> 00:25.440
+private route to do that.
+
+00:25.460 --> 00:30.240
+We're going to add some express middleware that does all of that validation and verification for us.
+
+00:30.350 --> 00:34.270
+That's going to make it dead simple to turn any one of our routes into a private route.
+
+00:34.280 --> 00:36.990
+Obviously we will have public routes like the sign up line.
+
+00:37.070 --> 00:38.530
+It doesn't make sense to make this private.
+
+00:38.530 --> 00:40.760
+Otherwise no one could ever sign up.
+
+00:40.790 --> 00:45.460
+Now to illustrate exactly how this is going to work we're going to make a brand new route an app and
+
+00:45.460 --> 00:46.640
+dots get to route.
+
+00:46.790 --> 00:53.000
+We'll use the HTP get method to access this one in the U R L is going to be forward slash users forward
+
+00:53.000 --> 00:54.250
+slash me.
+
+00:54.320 --> 00:59.210
+This route is going to require authentication which means you're going to need to provide a valid X
+
+00:59.210 --> 01:00.200
+auth token.
+
+01:00.200 --> 01:05.270
+It's going to find the associated user and it's going to send that user back much like we send the user
+
+01:05.270 --> 01:08.460
+back up above sending back the ID and e-mail.
+
+01:08.480 --> 01:12.710
+This will be our very first private route and then we'll take the lessons learned here to make some
+
+01:12.710 --> 01:17.450
+middleware so we can easily turn all of the routes above into private routes.
+
+01:17.480 --> 01:22.220
+The first thing we need to do is specify our callback function where we get the request and response
+
+01:22.430 --> 01:29.440
+objects and inside of here we're going to start by grabbing the token we can make a variable called
+
+01:29.480 --> 01:35.360
+token and we can set it equal to the return result from request dot hatter.
+
+01:35.470 --> 01:41.430
+Now Everquest is pretty similar to response dot Hetter response that lets us set a header.
+
+01:41.510 --> 01:45.260
+So it takes the key value request header is getting the value.
+
+01:45.290 --> 01:51.010
+So we only need to pass in that key the X off header variable is the value we want to fetch.
+
+01:51.020 --> 01:56.570
+Now we'll have that inside of Tokin and we can go ahead and actually verify that token fetch the user
+
+01:56.570 --> 01:58.330
+and do something with it.
+
+01:58.340 --> 02:01.340
+Now once again this is going to be code we use in multiple places.
+
+02:01.340 --> 02:07.640
+So we're going to turn it to our user schema and create a model method the model method is going to
+
+02:07.640 --> 02:16.100
+be accessed via uppercase user and it's going to be called Find a by token find by token is going to
+
+02:16.100 --> 02:21.530
+take the token value and it's going to find the appropriate user related to that token returning it
+
+02:21.770 --> 02:24.170
+inside of your promise callbacks.
+
+02:24.170 --> 02:30.120
+This means we'll be able to do something with the document of the user associated with the token.
+
+02:30.170 --> 02:35.900
+Now in order to get started down this path we obviously need to define this model method over inside
+
+02:35.900 --> 02:37.050
+of user dot.
+
+02:37.190 --> 02:42.550
+And that's what we're going to do first down below and below our generate auth token method.
+
+02:42.560 --> 02:44.720
+We're going to define our model method.
+
+02:44.720 --> 02:50.780
+This one gets created by calling users schema but instead of accessing dot methods we're going to access
+
+02:50.850 --> 02:56.600
+ADOT statics dot statics as an object kind of like methods although everything you add onto it turns
+
+02:56.600 --> 03:00.220
+into a model method as opposed to an instance method.
+
+03:00.440 --> 03:08.990
+Right here I'm going to set the statics property find by token now find by token is going to be a regular
+
+03:08.990 --> 03:14.360
+function using the function keyword because once again we do need access to this binding.
+
+03:14.480 --> 03:20.000
+And unlike our other methods it's also going to take an argument it's going to take that token now that
+
+03:20.000 --> 03:25.550
+we have the token we can go through the process of verifying it finding the associated user and returning
+
+03:25.550 --> 03:26.270
+it.
+
+03:26.300 --> 03:32.920
+The first thing I'm going to do is create a variable called user with an upper case you and set it equal
+
+03:32.950 --> 03:39.760
+to this instance methods get called with the individual document model methods get called with the model
+
+03:39.790 --> 03:40.260
+as the.
+
+03:40.270 --> 03:48.210
+This binding now that we have our User variable in place we can make a variable called Decoded Decoded
+
+03:48.230 --> 03:54.250
+which I'm going to set to undefine for the moment is going to store the decoded JWT values.
+
+03:54.250 --> 04:00.640
+This is going to be the return result from JWT to verify which we used over and hashing dot J ass right
+
+04:00.640 --> 04:01.280
+here.
+
+04:01.280 --> 04:05.130
+I'm creating an undefined variable and I'll tell you why in just a second.
+
+04:05.380 --> 04:13.000
+The reason why is because the JWT varify function is going to throw an error if anything goes wrong.
+
+04:13.150 --> 04:18.930
+If the secret doesn't match the secret the token was created with or if the token value was manipulated.
+
+04:19.090 --> 04:23.400
+That means we want to be able to catch this error and do something with it to do that.
+
+04:23.440 --> 04:30.340
+We're going to use a try catch block that's a try block followed by the cache keyword which gets called
+
+04:30.340 --> 04:34.920
+with this error arguments and we have the catch block right here.
+
+04:34.930 --> 04:39.240
+Now if you haven't use try catch blocks they're pretty great if any errors happen in the try block.
+
+04:39.250 --> 04:43.050
+The code automatically stops execution and moves into the catch block.
+
+04:43.120 --> 04:46.860
+It lets you run some code there then it continues on with your program.
+
+04:46.870 --> 04:50.690
+In our case the code that we want to test is JWT.
+
+04:50.820 --> 04:51.650
+Verify.
+
+04:51.760 --> 04:54.190
+We want to see if this throws an error.
+
+04:54.190 --> 05:00.220
+Now are going to set the result equal to the decoded variable and we're going to pass in our two arguments.
+
+05:00.220 --> 05:04.910
+The actual token we want to decode and the secret.
+
+05:04.930 --> 05:07.910
+Now once again the secret is currently stored in the code.
+
+05:07.990 --> 05:11.920
+We'll be changing that later but for now we can simply pass in the exact same value.
+
+05:11.920 --> 05:13.890
+ABC 1 2 3.
+
+05:13.930 --> 05:16.000
+Just like this.
+
+05:16.000 --> 05:20.050
+Now if this fails we're obviously going to add something into catch but we're going to do that in a
+
+05:20.050 --> 05:20.730
+little bit.
+
+05:20.740 --> 05:24.280
+For now I want to move on to what happens in the success case.
+
+05:24.280 --> 05:30.190
+If we are able to successfully decode the token that was passed in as the header we are going to call
+
+05:30.430 --> 05:35.570
+user and not find one to find the associated user if any.
+
+05:35.590 --> 05:40.650
+Now this is going to return a promise and we are going to return that in order to add some chaining.
+
+05:40.660 --> 05:45.320
+That means we can add a then call on to find by token over in server.
+
+05:45.340 --> 05:47.200
+J.S. Right here.
+
+05:47.200 --> 05:51.880
+We're going to call find one with our query and for the first time we're going to need to query our
+
+05:51.880 --> 05:55.900
+nested object properties inside of tokens.
+
+05:55.900 --> 05:56.790
+We have an array.
+
+05:56.830 --> 06:02.710
+We have a token an access property we need to find users whose values match the ones that we have right
+
+06:02.710 --> 06:03.220
+here.
+
+06:03.220 --> 06:05.050
+The first one we're looking for is the ID.
+
+06:05.050 --> 06:06.150
+Nothing new there.
+
+06:06.190 --> 06:13.150
+We're looking for a user where the underscore ID property equals the one inside of Decoded decoded underscore
+
+06:13.210 --> 06:14.430
+ID.
+
+06:14.440 --> 06:20.950
+Next up we need to find a user whose tokens array has an object where the token property equals the
+
+06:20.950 --> 06:25.400
+token property we have right here to query a nested document.
+
+06:25.420 --> 06:32.530
+What we're going to do is wrap our value in quotes and then we're going to specify tokens dot token.
+
+06:32.530 --> 06:34.360
+This lets us query that value.
+
+06:34.360 --> 06:38.360
+We want to find one where it's equal to the token argument passed in above.
+
+06:38.500 --> 06:41.340
+And we're going to do the exact same thing for access.
+
+06:41.380 --> 06:49.240
+We're looking for a user where in their tokens array the access property is set to off.
+
+06:49.250 --> 06:53.780
+Now off is going to be the string there is no Auth. variable saw wrap it in quotes.
+
+06:53.780 --> 06:57.740
+Now to keep things consistent I am going to wrap this idea in quotes as well.
+
+06:57.770 --> 07:02.310
+You don't need to do that but sense quotes are required when we have a dot in the value.
+
+07:02.390 --> 07:05.580
+I need them here so I might as well use them up above.
+
+07:05.600 --> 07:10.340
+Now with this in place are fine by token method has its success case handled.
+
+07:10.400 --> 07:13.290
+We still haven't handled any errors but that's fine for the moment.
+
+07:13.340 --> 07:15.360
+We can continue on inside of server.
+
+07:15.360 --> 07:17.010
+J.S. Right here.
+
+07:17.120 --> 07:23.320
+I'm going to tack on a then call back this callback is going to get called with the user.
+
+07:23.330 --> 07:26.050
+It might be Knol if there is no user that passed the query.
+
+07:26.060 --> 07:28.350
+So we'll have to check for that as well.
+
+07:28.610 --> 07:29.630
+If there is no user
+
+07:32.840 --> 07:35.510
+We're going to do something and we're going to do that in just a moment.
+
+07:35.510 --> 07:39.170
+For now we're going to stick with that happy path on the happy path.
+
+07:39.170 --> 07:42.860
+The last thing we do is we respond with the user.
+
+07:42.860 --> 07:47.950
+That means I'm going to call response send passing in the user document.
+
+07:47.960 --> 07:53.450
+Now obviously the call is not complete but we can go ahead and save both of these files and it should
+
+07:53.450 --> 07:57.620
+work if we pass in a valid X auth token and that's all we care about.
+
+07:57.620 --> 08:03.200
+For the moment over inside of robo Mongo I'm going to go ahead and wipe my databases since I have a
+
+08:03.200 --> 08:04.730
+lot of weird data.
+
+08:04.820 --> 08:11.330
+I'm going to refresh the connection take the to do app database and simply drop it.
+
+08:11.390 --> 08:18.060
+Now over inside the terminal I can start up the server node server server J.S. and I can move into post
+
+08:18.070 --> 08:22.070
+man to create a user over inside of postman.
+
+08:22.190 --> 08:27.530
+I'm going to make a post user's request using the default data where the email is and you're at example
+
+08:27.530 --> 08:28.380
+dot com.
+
+08:28.580 --> 08:31.750
+I'm going to send out this request and everything works as expected.
+
+08:31.880 --> 08:34.970
+We got our user back and we get our Hetter value.
+
+08:34.970 --> 08:40.300
+Now I'm going to go ahead and copy this X off hetter value because we need to use it for our next request.
+
+08:40.450 --> 08:44.930
+It's going require me to go to the right and make sure I grab the entire thing not just the visible
+
+08:44.930 --> 08:45.620
+part.
+
+08:45.620 --> 08:49.970
+Now I can go ahead and make a separate request by creating a new tab.
+
+08:49.970 --> 08:52.830
+This one is going to be to the environment variable.
+
+08:52.850 --> 08:55.000
+You Arel like all the other ones are.
+
+08:55.100 --> 08:59.650
+And the you R-AL is forward slash user's forward slash meet.
+
+08:59.780 --> 09:04.550
+Now this call is going to fail if we don't pass a token because we haven't set up the error handler
+
+09:04.550 --> 09:05.640
+just yet.
+
+09:05.690 --> 09:13.400
+So I am going to provide the x value and the tab will set X hyphen Auth. equal to the value we just
+
+09:13.400 --> 09:15.430
+copied from the response.
+
+09:15.510 --> 09:17.150
+Then I can go ahead and send this off.
+
+09:17.150 --> 09:18.170
+And what do we get.
+
+09:18.170 --> 09:22.340
+We get our user back and this is fantastic.
+
+09:22.480 --> 09:28.820
+We get users me route requires an X off value it's not going to work if you don't provide one.
+
+09:28.820 --> 09:31.590
+Now obviously we provided a valid token here.
+
+09:31.700 --> 09:34.700
+Let's go ahead and write some code that makes things work.
+
+09:34.730 --> 09:39.810
+When the token is valid over inside of atom we're going to kick things off in user.
+
+09:39.830 --> 09:45.440
+J.S. Right here in this catch block we're going to do is return a promise that's always going to reject
+
+09:45.610 --> 09:50.260
+it this code runs we never want this code to run right here.
+
+09:50.290 --> 09:57.000
+I am going to return a new promise then we're going to pass in our function.
+
+09:57.020 --> 10:02.280
+Remember the promise gets called with resolve and reject.
+
+10:02.460 --> 10:07.380
+This can be an arrow function and inside of here all I'm going to do is call reject.
+
+10:07.380 --> 10:10.710
+This means that this promise will get returned from fine by tokin.
+
+10:10.860 --> 10:12.970
+Then over inside of server it'll get rejected.
+
+10:13.050 --> 10:19.470
+So our then success case will never fire the catch call back window so we can add one right here.
+
+10:19.530 --> 10:22.770
+An attack on a catch callback it'll get called with some error.
+
+10:22.980 --> 10:28.770
+And this is where we'll have that code now inside of the catch call back all we're going to do is send
+
+10:28.770 --> 10:30.090
+back a 401.
+
+10:30.090 --> 10:34.860
+Status the 401 status means authentication is required if we get an error.
+
+10:34.890 --> 10:37.690
+That means clearly they didn't authenticate correctly.
+
+10:37.710 --> 10:45.390
+We can do that using response ADOT status setting the status equal to 4 0 1 and sending back an empty
+
+10:45.510 --> 10:46.650
+body.
+
+10:46.740 --> 10:50.420
+Now inside of user J s this code can actually be simplified.
+
+10:50.580 --> 10:53.990
+Instead of returning a new promise then rejecting it right away.
+
+10:54.220 --> 11:01.380
+We can actually return promise dot reject this does the exact same thing only it is a heck of a lot
+
+11:01.380 --> 11:02.120
+simpler.
+
+11:02.130 --> 11:09.270
+I could also pass in a value if I want to reject with some value that value would get used as the argument
+
+11:09.330 --> 11:10.440
+right here.
+
+11:11.100 --> 11:14.110
+Now over inside of user we are going to stick with this reject method.
+
+11:14.220 --> 11:19.020
+I'm going to go ahead and remove the commented out code the much longer version and there we go find
+
+11:19.020 --> 11:22.670
+by tokened is officially complete inside of server.
+
+11:22.670 --> 11:25.210
+Yes we still have one case that we need to fix.
+
+11:25.350 --> 11:30.930
+If there is no user This means there is a valid token but for some reason the query could not find a
+
+11:30.930 --> 11:34.090
+document that matched the parameters we specified.
+
+11:34.170 --> 11:36.720
+In that case we want to respond with the exact same thing.
+
+11:36.810 --> 11:38.760
+We want to send back a 401.
+
+11:39.090 --> 11:43.300
+Now we could go ahead and use response dot status with the 401.
+
+11:43.320 --> 11:44.830
+And send back an empty body.
+
+11:44.880 --> 11:47.280
+But that's the exact same thing we have down below.
+
+11:47.280 --> 11:54.870
+A better technique would be to return promise not reject just like we did in the other file.
+
+11:54.870 --> 11:57.010
+Now the function is automatically going to stop.
+
+11:57.030 --> 11:58.980
+So this code will never get executed.
+
+11:58.980 --> 12:01.520
+We're going to run the error case and we're going to send back a 4.
+
+12:01.520 --> 12:04.970
+0 1 which is exactly what we want with this in place.
+
+12:04.980 --> 12:07.800
+We can now test that our new code is working.
+
+12:07.800 --> 12:11.360
+I'm going to go ahead and save both files over inside of the terminal.
+
+12:11.380 --> 12:16.560
+Give things a restart and inside of postman we can now make the exact same request.
+
+12:17.440 --> 12:18.280
+It's valid.
+
+12:18.280 --> 12:19.570
+Let's go ahead and change it.
+
+12:19.600 --> 12:22.630
+I'm going to change the e to and send it off.
+
+12:22.720 --> 12:24.510
+And what do we get we get our 401.
+
+12:24.550 --> 12:25.780
+Unauthorized.
+
+12:25.780 --> 12:29.550
+I can also remove X off altogether send that off.
+
+12:29.590 --> 12:30.940
+And we also get a 401.
+
+12:30.960 --> 12:31.750
+On authorized.
+
+12:31.750 --> 12:34.270
+Which is fantastic.
+
+12:34.270 --> 12:37.330
+Now this call is going to be something we use over and over again.
+
+12:37.360 --> 12:44.790
+So I am going to set off equal to the string test and I'll save it in my to do app collection.
+
+12:44.790 --> 12:49.990
+I'm going to use Save As I'll change the request name to get users.
+
+12:49.990 --> 12:56.250
+Me and I'm going to save it to our existing to do app collection so we can fire it off much quicker
+
+12:56.340 --> 12:57.690
+later on.
+
+12:57.690 --> 13:03.990
+Now that we have our one route privatized we want to break out this code into some middleware.
+
+13:03.990 --> 13:09.090
+So all of our routes can take advantage of it without having to actually run all of these function calls
+
+13:09.390 --> 13:09.990
+for the moment.
+
+13:09.990 --> 13:15.030
+We're going to define our middleware function right here although it will be moved into its own file.
+
+13:15.030 --> 13:20.430
+We can make a function we can call it authenticate and this is going to be the middleware function that
+
+13:20.430 --> 13:22.770
+we use on our routes to make them private.
+
+13:22.770 --> 13:28.290
+Now if you remember from the middleware section we get three arguments the request the response and
+
+13:28.350 --> 13:33.820
+next the actual route is not going to run until next gets called inside of the middleware.
+
+13:34.110 --> 13:37.870
+Then we can tack on the rest of the Aero function and we can get started.
+
+13:38.040 --> 13:42.010
+Now this function is actually going to look really really similar to the one we have down below.
+
+13:42.120 --> 13:48.650
+So I'm going to take it copy it and paste it inside of authenticate making just a few changes.
+
+13:48.660 --> 13:50.550
+Now we do still want to grab the token value.
+
+13:50.550 --> 13:55.280
+This line is perfectly fine and we do still want to find the user by tokin.
+
+13:55.410 --> 14:00.570
+Next up we do still want to reject if there is an error but right here instead of sending back the user
+
+14:00.570 --> 14:04.020
+what we're going to do is modify the request object.
+
+14:04.020 --> 14:10.440
+This means that we'll be able to use the modified request object inside of the route down below to add
+
+14:10.440 --> 14:16.020
+the middleware will simply reference the function right here and now this route will be using the middleware
+
+14:16.020 --> 14:17.440
+defined up above.
+
+14:17.700 --> 14:25.020
+Instead of sending back a response we're going to set request dot user equal to the user We just found.
+
+14:25.080 --> 14:31.410
+And we're also going to request a dot token equal to the token up above.
+
+14:31.410 --> 14:37.250
+Now that we have a request modified we're going to able to use that data by accessing it right here.
+
+14:37.560 --> 14:43.350
+This means that what we can do down below is remove all of this code and simply call response send sending
+
+14:43.350 --> 14:48.000
+back the user which is available on request dot user.
+
+14:48.000 --> 14:52.170
+Now right here after we modify the request object we do need to call next.
+
+14:52.290 --> 14:56.420
+Otherwise the code down below in this function will never actually execute.
+
+14:56.460 --> 14:59.230
+Right here we are still going to send back a 401.
+
+14:59.370 --> 15:02.180
+If anything goes wrong we do want to respond.
+
+15:02.220 --> 15:05.240
+And we're not calling next because we don't want to run this code.
+
+15:05.310 --> 15:08.880
+If the authentication didn't work as expected.
+
+15:08.880 --> 15:13.350
+Now that we have this in place we have the exact same functionality only we have it in a really reusable
+
+15:13.350 --> 15:14.040
+function.
+
+15:14.250 --> 15:18.850
+I'm going to go ahead and break this out into its own folder and file inside of server.
+
+15:18.870 --> 15:20.350
+We'll make a new directory.
+
+15:20.550 --> 15:28.270
+I'm going to call this new directory middleware and inside of middleware we'll make a file called authenticate
+
+15:30.170 --> 15:32.850
+J.S. and all we're going to have an authenticator.
+
+15:32.870 --> 15:35.250
+J S is our middleware function.
+
+15:35.300 --> 15:40.910
+I'm going to cut it out a server J paste paste inside of here and now all we need to do is import the
+
+15:40.910 --> 15:41.450
+user.
+
+15:41.460 --> 15:47.690
+Since that is not currently accessible inside of this file I'm going to make a variable that variable
+
+15:47.690 --> 15:52.100
+will pull off user from the return value just like we did earlier.
+
+15:52.340 --> 15:54.150
+Then we're going to have a relative path.
+
+15:54.230 --> 15:56.360
+We need to go up a directory.
+
+15:56.810 --> 16:02.180
+Then we're going to go into the models directory and we're going to grab that user file models spelled
+
+16:02.210 --> 16:02.910
+incorrectly.
+
+16:02.930 --> 16:04.680
+M o d e l.
+
+16:04.730 --> 16:06.380
+That's excellent.
+
+16:06.380 --> 16:10.640
+Now we have our imports in place the last thing to do is export authenticate.
+
+16:10.640 --> 16:17.570
+I'm going to set module exports equal to an object and that object will simply authenticate equal to
+
+16:17.570 --> 16:21.020
+the authenticate variable defined above.
+
+16:21.020 --> 16:23.270
+Now that are authenticate file is complete.
+
+16:23.270 --> 16:29.540
+We can load it in in server JSA and access the middleware just like we have right here up above at the
+
+16:29.540 --> 16:31.620
+very top of the file we can get this done.
+
+16:31.730 --> 16:35.130
+I'm going to do it just below where we have our user inport.
+
+16:35.150 --> 16:37.010
+We're going to make a variable.
+
+16:37.340 --> 16:44.180
+We're going to pull off authenticate then we're going to require it using the relative path we need
+
+16:44.180 --> 16:47.060
+to go into that middleware directory that we just created.
+
+16:47.180 --> 16:53.330
+And we're going to grab the authenticate file leaving off the JS extension now that we have the authenticate
+
+16:53.330 --> 16:59.450
+variable imported it is going to be used right here and they get route for fetching the currently authenticated
+
+16:59.450 --> 17:02.040
+user will work just as it did before.
+
+17:02.240 --> 17:07.160
+I'm going to go ahead and save all of my files restart things over in the terminal and make one final
+
+17:07.160 --> 17:11.030
+request in postman to verify everything works.
+
+17:11.030 --> 17:14.830
+Now I am going to need to create a new user since I lost access to that token.
+
+17:14.870 --> 17:16.910
+Actually I think it is still sitting over here.
+
+17:16.910 --> 17:17.820
+Perfect.
+
+17:17.840 --> 17:22.400
+I'm going to grab the old token from the other tab if you don't have it you can always sign up a new
+
+17:22.400 --> 17:29.030
+user that I'm going to go to get users me paste it in here and send off my request we get to 200 and
+
+17:29.030 --> 17:35.450
+we get the user object which means everything is working as expected when the token gets processed it
+
+17:35.450 --> 17:38.570
+properly calls it the actual route handler.
+
+17:38.690 --> 17:42.340
+We get the request user right here and we send it back.
+
+17:42.380 --> 17:46.630
+Now if the token is a bad value I'm going to delete some keys and we send that off.
+
+17:46.640 --> 17:51.380
+We're still getting the correct errors so everything is looking great now that we have this in place
+
+17:51.380 --> 17:55.230
+we have our first private route which is just fantastic.
+
+17:55.250 --> 17:59.250
+I'm going to wrap this video up by making a comment to save our changes.
+
+17:59.330 --> 18:02.020
+Let's shut down the server and run it get status.
+
+18:02.030 --> 18:04.160
+Here we have our modified user file.
+
+18:04.160 --> 18:06.980
+The server file and our new middleware file.
+
+18:06.980 --> 18:12.770
+I can use get added to add all of those to the next commit that I can use and get commit with the flag
+
+18:12.770 --> 18:17.580
+to make the commit ad get users.
+
+18:17.690 --> 18:20.560
+Me and authentication middleware
+
+18:24.020 --> 18:25.100
+and there we go.
+
+18:25.100 --> 18:26.380
+I'm going to push that up to get help.
+
+18:26.390 --> 18:28.060
+And we are done.
+
+18:28.190 --> 18:31.080
+We've made some really good progress towards authentication.
+
+18:31.100 --> 18:36.020
+We all have a way to generate tokens and we have a way to verify those tokens creating private routes
+
+18:36.350 --> 18:40.400
+in the next video we're going to continue on working through authentication.
+
+18:40.400 --> 18:41.840
+I'm super excited to get to it.
+
+18:41.840 --> 18:42.860
+So stay tuned.
+
+18:42.860 --> 18:44.580
+I will see you next time

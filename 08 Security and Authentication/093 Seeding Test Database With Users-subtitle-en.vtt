@@ -1,0 +1,580 @@
+WEBVTT
+
+00:00.330 --> 00:05.070
+Before we can actually test our two routes the Sign-Up route and the get users mi route.
+
+00:05.160 --> 00:10.150
+We're going to need to add some seed data to the database for the users collection.
+
+00:10.170 --> 00:14.640
+We're going to need to use that data in order to test things like authenticate if we want to make sure
+
+00:14.640 --> 00:15.690
+this route works.
+
+00:15.690 --> 00:19.980
+We're going to need to pass along an X or token inside a super test which means we're going to need
+
+00:19.980 --> 00:24.540
+an Zaka token in the database in order for this call to work to set up our data.
+
+00:24.570 --> 00:29.580
+We are going to kick things off by opening up server test ADOT J.S. but instead of adding more code
+
+00:29.580 --> 00:34.560
+on here making this file more bloated than it already is we're going to create a separate file that's
+
+00:34.560 --> 00:41.700
+responsible for creating the seed data and defining the function that gets passed to before each before
+
+00:41.700 --> 00:43.030
+we add anything new.
+
+00:43.050 --> 00:46.940
+We're simply going to migrate this functionality over to the new file.
+
+00:46.990 --> 00:48.780
+Then we can verify it still works.
+
+00:48.870 --> 00:51.750
+Then we'll move on adding a user sead data.
+
+00:51.750 --> 00:57.860
+First up I am going to run the test suite using NPM test to prove that all my test cases are still working.
+
+00:57.960 --> 01:02.700
+Then we're going to make the change moving this to a new file and we'll run NPM test again to make sure
+
+01:02.700 --> 01:04.560
+we haven't broken anything.
+
+01:04.560 --> 01:07.320
+Now this new file is going to live in the Test folder.
+
+01:07.440 --> 01:12.800
+We're going to make a new folder called seed and inside of the seed folder it will make a file called
+
+01:12.800 --> 01:16.100
+SEE THE DOT J s inside of here.
+
+01:16.140 --> 01:18.690
+We're going to add the code we have over in server test.
+
+01:18.770 --> 01:24.240
+J.S. at the very top of the file the first thing we want to grab is that to Doo's array.
+
+01:24.240 --> 01:26.390
+This array is going to be added to the database.
+
+01:26.400 --> 01:29.940
+I'm going to cut it out of the server file and paste it in here.
+
+01:29.940 --> 01:34.170
+Next up we are going to be grabbing the function that gets passed to before each.
+
+01:34.170 --> 01:38.070
+We're not going to grab the actual before each call just the function.
+
+01:38.130 --> 01:41.900
+Now over in server doc J.S. we can define a new function.
+
+01:41.940 --> 01:49.440
+Let's make a contest called populate to do's and we'll set that equal to the function we've just copied.
+
+01:49.440 --> 01:54.740
+Now we have everything divined over in the seed file as opposed to the server file.
+
+01:54.840 --> 01:55.940
+We're not quite done yet.
+
+01:55.950 --> 01:58.170
+We do need to load in some imports.
+
+01:58.200 --> 02:03.120
+We use the object id constructor and we also access it need to do a model.
+
+02:03.120 --> 02:06.420
+That means up at the top of the file We're going to have to add two lines.
+
+02:06.480 --> 02:10.150
+First up let's go ahead and load in the object id constructor function.
+
+02:10.440 --> 02:15.890
+We'll make a cons object id using E.S. 60 structuring just like we've done before.
+
+02:15.900 --> 02:22.420
+Make sure you spell it right though and then we'll go ahead and require it off of a mango D-B.
+
+02:22.420 --> 02:27.220
+Next up we're going to go ahead and load in that to do model because we do call to do not remove and
+
+02:27.220 --> 02:32.760
+to do not insert many to modify the collection we'll make a concert.
+
+02:32.980 --> 02:39.820
+We'll call that Konst to do using yes 6 destructuring and we will go ahead and require it using a relative
+
+02:39.850 --> 02:40.690
+path.
+
+02:40.690 --> 02:45.370
+Now we are in the tests ceed a directory which means we're going to need to go up to directories out
+
+02:45.370 --> 02:48.550
+of seed and out of tests then we'll go into models.
+
+02:48.790 --> 02:53.980
+That means we'll use dot dot to go up one directory and dot dot again to go up a second directory.
+
+02:54.100 --> 02:56.930
+And now we can go ahead and reference the models directory.
+
+02:56.980 --> 03:01.870
+And finally the file to do now that we have both of our imports in place.
+
+03:01.900 --> 03:08.220
+The last thing to do is export the Dewes array since we do use that in the server test file down below
+
+03:08.230 --> 03:14.140
+we access it inside of our test cases and we're also going to export the function we just defined populate
+
+03:14.220 --> 03:21.340
+to do's module Boddam exports is going to equal an object and on there we'll add those two things to
+
+03:21.340 --> 03:24.900
+do's and populate to do.
+
+03:25.210 --> 03:27.280
+Excellent with our experts in place.
+
+03:27.280 --> 03:33.100
+The seed file is done and we can move into the server test file to load in the seed data right here
+
+03:33.160 --> 03:35.870
+just below where I require the to do model.
+
+03:35.890 --> 03:38.220
+I am going to go ahead and use a constant.
+
+03:38.590 --> 03:40.810
+And we're going to pull off a few of those properties.
+
+03:40.900 --> 03:47.810
+We're going to pull off the two do's array and we're going to pull off populate days.
+
+03:47.870 --> 03:51.850
+We're going to grab all of that from the file we just created using require.
+
+03:51.980 --> 03:54.440
+We'll use a relative path since it is a local file.
+
+03:54.440 --> 03:58.860
+It's in the seed directory on the file name itself is called seed.
+
+03:58.880 --> 04:01.070
+Now we don't need to do anything with it to do array.
+
+04:01.160 --> 04:04.940
+We simply reference it down below like we did before and everything works as expected.
+
+04:05.060 --> 04:08.840
+But we are going to need to pass in populate to do's right here.
+
+04:09.900 --> 04:10.830
+With this in place.
+
+04:10.890 --> 04:16.440
+We have not changed a single piece of functionality we've just refactored our program to move some code
+
+04:16.440 --> 04:19.550
+out of server tasks and in to the seed file.
+
+04:19.620 --> 04:24.150
+Now that we've made this change I am going to rerun the test suite to verify that everything is still
+
+04:24.150 --> 04:30.240
+working as expected here all 11 Tests are passing which means we're ready to move on adding some seed
+
+04:30.240 --> 04:36.810
+data for that users collection in order to see the users we are going to create a users array much like
+
+04:36.810 --> 04:43.000
+we did for dues and we'll also make a populate users function much like we did for dues down below.
+
+04:43.110 --> 04:46.440
+First up let's go ahead and load in the user model.
+
+04:46.620 --> 04:52.520
+We'll make a concert called user and we're going to require it using a very similar path.
+
+04:52.550 --> 04:53.900
+It's a relative path.
+
+04:53.900 --> 04:56.920
+We're going to go back those two directories then into models.
+
+04:56.930 --> 05:03.170
+And finally the user file is what we want to grab now that we have this in place we can define a constant
+
+05:04.620 --> 05:05.610
+called users.
+
+05:05.610 --> 05:10.230
+And this is going to be the array the array of users we add as our seed data.
+
+05:10.330 --> 05:13.750
+We're going to add to users so I'm going to add two objects to the array.
+
+05:13.890 --> 05:18.300
+The first user this is going to be a user with a valid authentication token.
+
+05:18.300 --> 05:23.520
+And the second user is going to be a user that does not have any authentication tokens and will use
+
+05:23.520 --> 05:25.830
+the second user for things like testing.
+
+05:25.830 --> 05:28.960
+What happens when we don't pass an X auth token.
+
+05:29.040 --> 05:33.960
+For now though we can start filling out these users the first one is going to have an underscore ID
+
+05:33.960 --> 05:34.840
+property.
+
+05:34.890 --> 05:40.780
+We're going to set that equal to a new object ID then we can set up an email on a password.
+
+05:40.830 --> 05:45.070
+A good email for this one would be Andrew at example dot com.
+
+05:45.090 --> 05:52.830
+And finally that password field I'm going to set password equal to user 1 pass.
+
+05:52.840 --> 05:56.200
+Next up we are going to need to provide the tokens array.
+
+05:56.270 --> 06:02.650
+Remember the tokens array is an array of objects and every object has two properties access and token.
+
+06:02.770 --> 06:04.600
+The access property is easy enough.
+
+06:04.660 --> 06:10.770
+We simply set access equal to the string off but the token property is going to be a little more difficult.
+
+06:10.780 --> 06:17.340
+The token property is going to require us to call JWT sign just like we do over inside of user.
+
+06:17.360 --> 06:18.810
+J.S. down below.
+
+06:19.060 --> 06:24.370
+Right here we sign our data creating the token we're going to need to do the exact same thing using
+
+06:24.370 --> 06:25.810
+the exact same secret.
+
+06:25.810 --> 06:29.810
+ABC 1 2 3 in order to create the seed data.
+
+06:29.980 --> 06:34.570
+Now we are going to need to reference the user ID inside of that call and since we've provided it right
+
+06:34.570 --> 06:35.950
+here there's no way to reference it.
+
+06:35.950 --> 06:45.170
+So instead what I'm going to do is make a variable a constant called user 1 ID and I'm going to set
+
+06:45.170 --> 06:49.090
+that equal to the object id that I can reference this wherever I want.
+
+06:49.090 --> 06:51.260
+Down below I'm going to pass it in right here.
+
+06:51.260 --> 06:57.090
+User 1 ID and I'm going to pass it into our call to JWT dot sign.
+
+06:57.250 --> 07:03.730
+And before I can call that function I am going to load it in concert JWT and we're going to require
+
+07:03.770 --> 07:08.760
+the Jason Webb token library.
+
+07:08.800 --> 07:15.450
+Now we can call JWT that sign passing in the necessary arguments for the data that we want to sign and
+
+07:15.460 --> 07:22.600
+we're going to have our two values the ID which we have access to via the user one ID variable and access
+
+07:22.780 --> 07:26.660
+which as we know we're just going to set equal to the string off.
+
+07:26.680 --> 07:31.930
+Next up we are going to need to go ahead and provide the exact same secret we used earlier.
+
+07:31.990 --> 07:35.410
+The secret we used was ABC 1 2 3.
+
+07:35.470 --> 07:38.910
+So I'm going to provide that as the second argument.
+
+07:39.170 --> 07:45.020
+I'm also going to wrap up this call by calling to string converting this into the string token.
+
+07:45.500 --> 07:49.610
+Now that we have the first user in place we can go ahead and at our second user and the second user
+
+07:49.610 --> 07:53.200
+is going to be a lot more simple we're not going to have to add the tokens array.
+
+07:53.390 --> 07:59.870
+I am going to make a variable to store its ID though a Konst user to ID variable and we'll set that
+
+07:59.870 --> 08:03.100
+equal to a new object.
+
+08:04.790 --> 08:10.850
+Now down below we can add the three attributes necessary ID email and password Id obviously will equal
+
+08:10.850 --> 08:17.030
+the variable we just created the email can equal any info that we haven't used we only used one.
+
+08:17.150 --> 08:21.310
+So I'm going to go ahead and use Jen an example dot com.
+
+08:21.350 --> 08:26.600
+And finally we can provide a password and I want to stick with that same scheme for the password property
+
+08:26.930 --> 08:28.800
+I used use or one pass for this one.
+
+08:28.880 --> 08:32.860
+I will use user to pass down below.
+
+08:32.870 --> 08:37.770
+Now we have our users created and it's time to start actually populating the database.
+
+08:37.820 --> 08:41.370
+We're going to do that via a function really similar to populate to do.
+
+08:41.480 --> 08:43.460
+There's one important caveat though.
+
+08:43.490 --> 08:47.470
+Insert many is what we currently use to insert our records into the database.
+
+08:47.570 --> 08:52.820
+But this is not going to run our middleware which means when we insert these records the plain text
+
+08:52.820 --> 08:55.040
+password is going to get stored in the database.
+
+08:55.070 --> 08:59.610
+Obviously that's going to cause some problems later and we try to test things because our tests are
+
+08:59.610 --> 09:05.180
+going to assume the password was properly hashed in order to save these users and have the password
+
+09:05.180 --> 09:05.720
+hashed.
+
+09:05.780 --> 09:09.720
+We're going to tweak how we create our populate user's function.
+
+09:10.490 --> 09:16.380
+Konst populate users is going to be the name of the function and we are going to set it equal to an
+
+09:16.380 --> 09:24.170
+arrow function that gets the Done argument just like we do for populate to do's up above now inside
+
+09:24.170 --> 09:26.750
+of popular users things are going to start in much the same.
+
+09:26.750 --> 09:32.810
+We're going to wipe all of the users in the database by calling user remove and we're going to pass
+
+09:32.810 --> 09:35.670
+in that empty object to remove every single record.
+
+09:35.810 --> 09:42.330
+Then we'll tack on a then callback and inside of here is where we're going to actually add the records.
+
+09:42.330 --> 09:47.490
+I'm going to add this missing semicolon and now we can go ahead and start by creating those users.
+
+09:47.550 --> 09:52.530
+The first thing I'm going to do is make a variable called User 1 and we're going to set this equal to
+
+09:52.560 --> 09:58.510
+a new user and we're going to pass in the object that is the first item in the user's array.
+
+09:58.560 --> 10:02.850
+We can get that by accessing the first item using the zero index.
+
+10:03.030 --> 10:05.280
+Then we can go ahead and call Save on this.
+
+10:05.280 --> 10:08.930
+And the value that gets returned from Save that is what's going to be in User 1.
+
+10:08.970 --> 10:13.620
+And as we know that is a promise which means we can tack on then and we'll be using that in just a moment
+
+10:13.740 --> 10:15.450
+to sync things up.
+
+10:15.450 --> 10:23.570
+We're going to do the exact same thing for a user to a VAR user 2 equals a new user.
+
+10:23.730 --> 10:28.890
+We're going to grab the second item from the array with the index of one and we'll be calling Save getting
+
+10:28.890 --> 10:30.530
+the promise back.
+
+10:30.540 --> 10:35.450
+Now we have two promises user 1 and user two we want to wait for both of them to succeed.
+
+10:35.580 --> 10:39.530
+And there's actually a promise utility method that lets you do just that.
+
+10:39.660 --> 10:41.170
+It's called Promise.
+
+10:41.170 --> 10:45.440
+The dot all promised dot all takes an array of promises.
+
+10:45.540 --> 10:47.080
+We can pass in our array.
+
+10:47.100 --> 10:50.110
+User 1 and user 2.
+
+10:50.370 --> 10:56.470
+Then we can call then and this call back it's not going to get fired until all of those promises resolve.
+
+10:56.550 --> 11:01.930
+Meaning that user one end user to were successfully saved to the database by calling save.
+
+11:02.010 --> 11:07.080
+We are going to be running the middleware and by using promised to all we'll be able to wait for all
+
+11:07.080 --> 11:09.870
+of those save actions to complete.
+
+11:09.870 --> 11:15.980
+Now I'm going to go ahead and remove the then call back here and instead I'll return the promise.
+
+11:16.010 --> 11:16.970
+All result.
+
+11:17.120 --> 11:20.810
+So I can tack on then right here right here.
+
+11:20.810 --> 11:23.080
+All I'm going to do is do what we did above.
+
+11:23.270 --> 11:28.640
+I get a call done wrapping up the populate to Dewes middleware function.
+
+11:28.700 --> 11:33.410
+Now with this in place we are done we can go ahead and run our test suite and see exactly what kind
+
+11:33.410 --> 11:35.950
+of data we get over in a rowboat Mongo.
+
+11:36.110 --> 11:41.740
+Now over inside of robo Monga we have some weird data inside of the test file inside of collections
+
+11:41.750 --> 11:43.550
+I have left over user data.
+
+11:43.550 --> 11:47.630
+I'm going to go ahead and drop this to do app test database.
+
+11:47.750 --> 11:51.530
+This will get recreated when we run the test suite over inside of Adam.
+
+11:51.620 --> 11:56.770
+I'm going to save the seed file and I am going to be adding a second before each call over inside of
+
+11:56.770 --> 11:57.830
+a server test.
+
+11:57.830 --> 12:04.520
+First up though I do need to export populate users and I need to export the users array up above.
+
+12:04.520 --> 12:11.960
+Right here we're going to export users and will export populate users and over inside of our server
+
+12:11.960 --> 12:12.770
+test file.
+
+12:12.830 --> 12:16.320
+We can add both of those as Constance users.
+
+12:17.200 --> 12:23.530
+Populate users and will pass populate users in to a second call to before each.
+
+12:23.530 --> 12:32.370
+I'm going to add the second call before populate to Doo's populate users.
+
+12:32.390 --> 12:33.520
+Excellent.
+
+12:33.590 --> 12:38.120
+Now that we have this in place we can rerun any test suite all of the tests should pass.
+
+12:38.120 --> 12:40.770
+We haven't actually changed any of the test cases.
+
+12:40.790 --> 12:45.900
+The real goal for rerunning the test suite is to see what kind of data we have in the test database.
+
+12:45.980 --> 12:52.010
+Once the test cases are complete over in Roboam ongo I'm going to refresh my connection go into the
+
+12:52.010 --> 12:57.800
+to do app test database and see what I have inside of the users collection inside of here.
+
+12:57.800 --> 12:58.920
+I have two records.
+
+12:59.000 --> 13:02.100
+The first one looks exactly like our second record.
+
+13:02.210 --> 13:06.850
+We have Jannette example adcom we have our ID and we have our hashed password.
+
+13:06.860 --> 13:08.750
+Notice there's nothing in the tokens array.
+
+13:08.900 --> 13:12.200
+The second record is the first item we have in the user's array.
+
+13:12.230 --> 13:18.410
+Right here we have our ID our e-mail the hash password and we also have art Hogan this token is going
+
+13:18.410 --> 13:24.150
+to be used inside of our test case to run those tests that require authentication.
+
+13:24.170 --> 13:26.120
+With this in place we are now done.
+
+13:26.240 --> 13:32.930
+We have a really great seed file the seed file abstracts all of that seed related functionality and
+
+13:32.930 --> 13:36.470
+doesn't need to live in server test where it was just taking up space.
+
+13:36.620 --> 13:41.480
+Now that we had this in place it's time to move on and actually write test cases that use this data
+
+13:41.750 --> 13:43.810
+that's coming up next so stay tuned.
+
+13:43.810 --> 13:45.370
+I will see you then.

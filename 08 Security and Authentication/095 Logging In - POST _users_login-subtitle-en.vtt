@@ -1,0 +1,748 @@
+WEBVTT
+
+00:00.500 --> 00:05.490
+In this video you're going to set up a dedicated route for logging in existing users.
+
+00:05.490 --> 00:09.870
+Currently the only way you can get an x token back is on the Sign-Up call.
+
+00:09.960 --> 00:14.040
+If you lose the token or you sign in from a different device obviously you're going to want to be able
+
+00:14.040 --> 00:14.860
+to get a new one.
+
+00:14.910 --> 00:17.010
+And currently that is just not possible.
+
+00:17.010 --> 00:21.590
+You can't make another call to the post users route because the email already exists.
+
+00:21.600 --> 00:23.670
+So the call is going to return a 400.
+
+00:23.700 --> 00:27.000
+What we need is a dedicated route for logging in users.
+
+00:27.090 --> 00:32.580
+Now Double-O this is going to be a post route and you are all we're going to use for this is forward
+
+00:32.580 --> 00:39.150
+slash users forward slash log in when you make a POST request to this route you'll be sending along
+
+00:39.150 --> 00:45.600
+some data you're going to send along an email in the request body and also the plain text password.
+
+00:45.600 --> 00:51.090
+This means that we're going to need to try to find a user in the Mongo DB user's collection who one
+
+00:51.270 --> 00:58.500
+has an e-mail matching the e-mail sent in and two has a hashed password that equals the plain text password
+
+00:58.620 --> 01:05.760
+when passed through the B crypt compare method which we used over inside of our hashing js file right
+
+01:05.760 --> 01:06.170
+here.
+
+01:06.210 --> 01:10.710
+We used to be crypt compare to compare a plain text value with a hash value.
+
+01:10.740 --> 01:16.020
+That's exactly what we're going to be doing to get this call to work and setting up this route is going
+
+01:16.020 --> 01:17.720
+to be your first challenge.
+
+01:17.730 --> 01:23.220
+I want you to set up this route then pick off the email and the password from the request body and to
+
+01:23.220 --> 01:25.200
+verify that the route is set up correctly.
+
+01:25.200 --> 01:29.450
+You can simply go ahead and respond using response send.
+
+01:29.490 --> 01:33.620
+And you can send back the body data then invite you to fire up your server.
+
+01:33.630 --> 01:38.820
+Make the log in call in postman passing in an e-mail and a password and make sure you get the e-mail
+
+01:38.940 --> 01:40.550
+and password back.
+
+01:40.560 --> 01:47.260
+Take a moment to knock this out test it and when you're done go ahead and click play.
+
+01:47.270 --> 01:48.610
+All right to get this done.
+
+01:48.740 --> 01:51.230
+But I'm going to do is call app drop post.
+
+01:51.230 --> 01:53.290
+We want to set up that post route.
+
+01:53.510 --> 01:58.850
+Now I can provide to you r l forward slash users forward slash log in.
+
+01:58.850 --> 02:00.770
+Now this is going to be a standard express route.
+
+02:00.770 --> 02:04.360
+We're not going to be using the authenticate middleware because you don't have a token.
+
+02:04.370 --> 02:07.400
+You're trying to get one that's the whole purpose of this call.
+
+02:07.470 --> 02:11.430
+We're going to have the request and response arguments inside of our callback function.
+
+02:11.430 --> 02:14.820
+And the first thing we're going to do is pick off the e-mail and the password.
+
+02:14.820 --> 02:17.640
+Now we've written this line before there's no reason to rewrite it.
+
+02:17.640 --> 02:21.060
+I can simply copy and paste it down below.
+
+02:21.060 --> 02:25.110
+Now the last thing I wanted you to do just to make sure the data was getting picked off properly is
+
+02:25.110 --> 02:29.770
+simply respond response send sending back the abody.
+
+02:30.060 --> 02:31.930
+Then we can go ahead and start up our server.
+
+02:32.100 --> 02:34.230
+I'm going to use gnomon to do that.
+
+02:34.230 --> 02:36.060
+No Amaan server.
+
+02:36.080 --> 02:37.790
+Forward slash server.
+
+02:37.820 --> 02:43.800
+SJS once the server is up and you see you're started at port three thousand message you can move over
+
+02:43.800 --> 02:46.680
+to postman and actually make a log in request.
+
+02:47.010 --> 02:52.480
+I'm going to make a post request to the local that you are all I can inject the you are allright here.
+
+02:52.600 --> 02:55.880
+Forward slash users forward slash log in.
+
+02:56.070 --> 02:58.920
+Then I'm going to send somebody data along as well.
+
+02:58.950 --> 03:00.630
+This is going to be Jason data.
+
+03:00.660 --> 03:04.260
+We're going to provide our two properties inside of our adjacent object.
+
+03:04.260 --> 03:13.220
+First up is going to be the e-mail I'm going to set this to Andrew at example dot com and a password
+
+03:13.220 --> 03:14.950
+which I'll set to whatever I like.
+
+03:14.960 --> 03:17.640
+1 2 3 ABC Act.
+
+03:18.110 --> 03:22.880
+Now that I have this in place I can go ahead and send off my request and down below I do indeed get
+
+03:22.880 --> 03:23.650
+the data back.
+
+03:23.660 --> 03:27.830
+I have the e-mail and the password is not showing up below because I mis spelt it up above.
+
+03:27.830 --> 03:30.650
+If I go ahead and spell it correctly I now get the password.
+
+03:30.650 --> 03:36.160
+Also if you have this in place then you're ready to move on actually filling out the route.
+
+03:36.170 --> 03:41.180
+Now the first thing we need to do is verify that a user exists with that e-mail.
+
+03:41.300 --> 03:46.390
+Then we're going to go ahead and get it's password property and pass that through the crypt compare.
+
+03:46.400 --> 03:50.690
+Now all of this is going to happen inside of a nother model method.
+
+03:50.690 --> 03:53.800
+We're going to create a model method just like we have in users.
+
+03:53.870 --> 03:57.270
+We have an existing model method it is called Find by tokin.
+
+03:57.320 --> 04:00.890
+We're going to make a separate one called find by credentials.
+
+04:00.920 --> 04:03.980
+This is going to take the email and password as arguments.
+
+04:03.980 --> 04:09.920
+It's then going to do its thing returning a promise with a user or with an error if the user didn't
+
+04:09.980 --> 04:11.000
+exist.
+
+04:11.090 --> 04:17.810
+Right here we can define that method user schema ADOT statics for a model method and this one will be
+
+04:17.810 --> 04:23.320
+called Find a by credentials now find by credentials.
+
+04:23.320 --> 04:28.210
+As I mentioned is going to take two arguments and I am going to use the function keyword because we
+
+04:28.210 --> 04:34.010
+do need access to this binding as we have for all of our other methods right here.
+
+04:34.120 --> 04:39.550
+We're going to have our e-mail argument as well as our password argument then we can go ahead and set
+
+04:39.550 --> 04:40.360
+up the function.
+
+04:40.360 --> 04:42.690
+And now we can call it over inside of server.
+
+04:43.330 --> 04:48.380
+I'm going to call it so I know kind of how I want it to work before I actually fill it out over here.
+
+04:49.170 --> 04:50.080
+Inside of server.
+
+04:50.130 --> 04:53.300
+Yes we can essentially call and find how it's going to work.
+
+04:53.310 --> 04:55.350
+This is a strategy I use pretty often.
+
+04:55.360 --> 05:00.030
+I'd like to write my method call first so I can figure out exactly what I want the method to do.
+
+05:00.030 --> 05:02.880
+Then I go ahead and write the method to fit my needs.
+
+05:02.940 --> 05:09.640
+In this case my needs are the ability to pass and email and password and get the user back user ADOT
+
+05:09.910 --> 05:15.090
+find by credentials is going to be the method it will be calling and will be passing in the body email
+
+05:15.100 --> 05:19.990
+property as well as the body password property.
+
+05:19.990 --> 05:26.620
+Next up what I like to be able to do is add a call to then once we find the user the success case should
+
+05:26.620 --> 05:28.310
+get that user back.
+
+05:29.170 --> 05:35.050
+And right here is where we would go ahead and create a new token responding to the HTP request.
+
+05:35.050 --> 05:39.160
+Now if we're not able to find a user that's fine too I'm going to add a catch call.
+
+05:39.250 --> 05:43.780
+We're getting at that error argument and right here is where we can respond to the user letting them
+
+05:43.780 --> 05:45.970
+know that we were not able to log in.
+
+05:46.210 --> 05:50.800
+Now before I go any further I am going to go ahead and actually define defined by credentials.
+
+05:50.800 --> 05:51.990
+I know how I want it to work.
+
+05:52.030 --> 05:56.020
+And now it's time to fill the method out inside of here.
+
+05:56.050 --> 06:01.180
+One of the first things we need to do is simply try to find a user where the e-mail equals of the e-mail
+
+06:01.180 --> 06:02.370
+that was passed in.
+
+06:02.440 --> 06:06.610
+Now it would be nice if we could do that via email and password but unfortunately we can't remember
+
+06:06.880 --> 06:08.580
+we have the plain text password.
+
+06:08.620 --> 06:13.870
+We do not have the password actually stored in the database so we can't simply query the data in order
+
+06:13.870 --> 06:15.520
+to find a potential match.
+
+06:15.520 --> 06:20.670
+We're going to find the user that does have the email of the email passed in.
+
+06:20.820 --> 06:26.290
+Now that is going to be nothing new here we're going to make a variable uppercase U user setting an
+
+06:26.290 --> 06:27.300
+equal to this.
+
+06:27.310 --> 06:30.250
+This is exactly what we did for our find by token method.
+
+06:30.340 --> 06:35.460
+And then we can go ahead and make a call to user ADOT find one.
+
+06:35.560 --> 06:40.960
+We're going to try to find a one user the user whose email matches the email we have right here.
+
+06:41.050 --> 06:45.200
+That means inside of our query all we have to do is reference e-mail like this.
+
+06:45.210 --> 06:48.910
+This is going to set an email property equal to the e-mail variable.
+
+06:48.910 --> 06:53.650
+Now I am going to be returning this we're going to be changing this promise since I added a then call
+
+06:53.790 --> 07:01.070
+and a catch call over here in server J S and N here we are going to tack on a then call because there
+
+07:01.070 --> 07:02.910
+is still more work to be done.
+
+07:03.140 --> 07:08.600
+We're not quite done we have to verify that the password also matches all of that is going to happen
+
+07:08.690 --> 07:10.010
+inside of here.
+
+07:10.150 --> 07:12.140
+Now we might get a user we might not.
+
+07:12.140 --> 07:15.110
+Either way we are going to specify the user argument.
+
+07:15.260 --> 07:19.430
+If we don't get a user we want to do something different we don't want to try to compare passwords since
+
+07:19.430 --> 07:21.740
+there is no password to compare.
+
+07:21.890 --> 07:24.630
+If there is no user what are we going to do.
+
+07:24.710 --> 07:28.750
+We're simply going to return a rejected premise.
+
+07:28.850 --> 07:34.160
+This is going to automatically trigger the catch case over here in server Yes and we can respond with
+
+07:34.160 --> 07:35.220
+an error.
+
+07:35.240 --> 07:42.140
+Now back inside of user dot J.S. we are going to return a call to promise dot reject.
+
+07:42.230 --> 07:43.330
+Excellent.
+
+07:43.340 --> 07:47.930
+Now we already handled the case where the user doesn't exist it's time to move on and figure out what
+
+07:47.930 --> 07:50.930
+to do when a user does exist.
+
+07:50.930 --> 07:55.320
+No the problem we're going to run into here is that the B script method we're going to be using be script
+
+07:55.430 --> 08:02.810
+doc compare it only supports callbacks in fact all of the script JS library methods only support callbacks.
+
+08:02.810 --> 08:04.610
+They do not support promises.
+
+08:04.640 --> 08:07.610
+I want to keep using promises I've been using them through the whole app.
+
+08:07.610 --> 08:11.260
+They're my preferred way to make a synchronous code work.
+
+08:11.270 --> 08:18.240
+So what I'm going to do instead is return a new promise like we did in previous sections here we're
+
+08:18.240 --> 08:20.200
+going to provide our function.
+
+08:20.310 --> 08:25.760
+We can either call resolve if it's a success we can call reject if it's not a success.
+
+08:25.830 --> 08:28.780
+And in here we can do whatever we like in our case.
+
+08:28.830 --> 08:34.710
+The thing that we're going to do in here is use decrypt dot compare to compare the password right here
+
+08:34.980 --> 08:38.280
+with the user data password property.
+
+08:38.280 --> 08:43.650
+Now that means over inside of server J as we are going to be able to do something with the user when
+
+08:43.650 --> 08:44.830
+it comes back.
+
+08:44.930 --> 08:51.540
+For the moment we're going to do is respond with the user response send something in the user that got
+
+08:51.540 --> 08:52.640
+found.
+
+08:52.650 --> 08:56.340
+Now notice here I'm not using an if statement to check if user exists or not.
+
+08:56.370 --> 09:00.610
+We created defined by credentials method so we get to determine how it works.
+
+09:00.690 --> 09:04.230
+If there is no user the catch case is going to get fired.
+
+09:04.230 --> 09:08.580
+That's exactly what we did when we set up this if statement right here.
+
+09:08.580 --> 09:11.260
+Back inside of server J s inside of catch.
+
+09:11.370 --> 09:19.250
+We're going to respond with a 400 status enemy to go ahead and call send to send the response.
+
+09:19.390 --> 09:23.030
+Now with this in place we're not quite done in terms of what we're going to add to server.
+
+09:23.050 --> 09:28.310
+Yes we do still need to create an authentication tokin that's going to happen in a few minutes.
+
+09:28.360 --> 09:34.690
+But for now we have enough in server Jay asks where her challenge can be to complete the find by credentials
+
+09:34.870 --> 09:36.440
+method right here.
+
+09:36.550 --> 09:47.290
+You're going to use be crypt doc compair use decrypt dot compare to compare password and user dot password.
+
+09:47.560 --> 09:53.350
+If the result is true that means you did find a user and you can call resolve with the user.
+
+09:53.350 --> 09:59.140
+We found it right here if the result is false meaning that the password and the hash password are not
+
+09:59.140 --> 10:04.450
+matches you can just call the reject method which we have defined right here and that will trigger the
+
+10:04.450 --> 10:06.850
+catch case over inside of server.
+
+10:06.880 --> 10:12.970
+J.S. that means all you really need to put inside of here where the comment is is the compare call just
+
+10:12.970 --> 10:17.650
+like we have over inside of our hashing file instead of logging out the response you're going to go
+
+10:17.650 --> 10:19.400
+ahead and check if it's true or false.
+
+10:19.480 --> 10:22.570
+If it's true you'll call resolved with the user if it's false.
+
+10:22.660 --> 10:24.420
+You're going to call reject.
+
+10:24.640 --> 10:25.830
+Take a moment to knock that out.
+
+10:25.840 --> 10:27.640
+And then I want you to test it as well.
+
+10:27.640 --> 10:31.170
+Now you can feel free to completely wipe your robo Mongo database.
+
+10:31.270 --> 10:36.910
+Then inside a post man you can make a new user then you can try to log in with those exact same credentials
+
+10:36.910 --> 10:42.130
+and what you should get back is the user object since we send it back right here.
+
+10:42.130 --> 10:47.630
+Then I'd also like you to mess up either the e-mail or the password and make sure you get a 400 back.
+
+10:47.830 --> 10:49.710
+So take a moment to try to knock this out.
+
+10:49.750 --> 10:54.230
+Feel free to use anything we've done in any of our projects to solve this problem.
+
+10:54.310 --> 10:57.580
+When you're done test it make sure everything works as expected.
+
+10:57.580 --> 11:02.080
+Then you can go ahead and click play how that go.
+
+11:02.160 --> 11:06.240
+I know that one was a little tricky but hopefully you were able to get it done and you were able to
+
+11:06.240 --> 11:08.540
+test it inside of postman.
+
+11:08.580 --> 11:15.240
+The first thing I'm going to do is call the crypt dot compare that we've already used be crypt in this
+
+11:15.240 --> 11:15.690
+file.
+
+11:15.690 --> 11:17.880
+We used it when we created our account.
+
+11:17.880 --> 11:23.340
+So there is no reason to go ahead and import it again it's already up there down inside of the challenge
+
+11:23.370 --> 11:23.960
+area.
+
+11:23.970 --> 11:26.930
+We can now pass in the three necessary arguments.
+
+11:27.030 --> 11:33.510
+The first one as we know is the plain password and we have access to that is via the argument password.
+
+11:33.510 --> 11:39.850
+Next up we have to pass in the hashed password and this is available on user ADOT password.
+
+11:39.930 --> 11:48.100
+And the final argument is our callback function with our two arguments now inside of here we need to
+
+11:48.100 --> 11:52.250
+check if the value of response is true or false.
+
+11:52.340 --> 11:58.040
+If the response variable is true we want to go ahead and resolve this promise.
+
+11:58.050 --> 12:01.060
+We want to resolve it with the user.
+
+12:01.080 --> 12:08.010
+This is going to let us do stuff with the user over inside of server J s like we do right here.
+
+12:08.190 --> 12:12.600
+If the result variable is not true we can add an else clause in that case.
+
+12:12.690 --> 12:17.340
+We're going to simply call a project rejecting the promise and this is going to send a four hundred
+
+12:17.460 --> 12:22.380
+back with this in place we're ready to test that everything is working as expected.
+
+12:22.380 --> 12:27.750
+I'm going to save the file and inside of robo Mongo I'm going to go ahead and wipe the to do app collection
+
+12:27.900 --> 12:31.040
+so I can recreate my users inside of post man.
+
+12:31.060 --> 12:34.850
+Then inside a post man we can go ahead and make a sign up request.
+
+12:34.980 --> 12:36.620
+I'm going to create that in a new tab.
+
+12:36.780 --> 12:42.030
+We can just click our post users request over inside of our collection sidebar and I am going to check
+
+12:42.030 --> 12:45.800
+out the data because I need to use these exact same credentials in just a few minutes.
+
+12:45.810 --> 12:51.890
+Here we have an example dot com as the email and we have password exclamation mark as the password.
+
+12:51.900 --> 12:53.680
+Now I can send off this request.
+
+12:53.700 --> 12:55.390
+This is going to create a new account.
+
+12:55.410 --> 12:59.250
+We get our ID in our email and we get our X off hetter over here.
+
+12:59.250 --> 13:05.370
+The goal now is to use these exact same credentials over inside our log in request up above.
+
+13:05.370 --> 13:07.350
+I'm going to go ahead and change the password.
+
+13:07.350 --> 13:09.120
+The email is already correct.
+
+13:09.270 --> 13:14.900
+I'm going to change it to password exclamation mark and we can send off this request.
+
+13:14.900 --> 13:16.190
+And what do we get down below.
+
+13:16.190 --> 13:21.850
+We get a status of 200 and we get the user object back which is fantastic.
+
+13:21.860 --> 13:27.740
+Notice here we are getting the exact same user the ID matches the ID we have inside of our response
+
+13:27.740 --> 13:29.990
+body for the sign up call.
+
+13:30.140 --> 13:34.100
+Now that we have this in place we can go ahead and test what happens when we send a bad password like
+
+13:34.100 --> 13:36.210
+password without an exclamation mark.
+
+13:36.230 --> 13:38.030
+In that case we get to 400.
+
+13:38.030 --> 13:42.030
+We can also try to fetch a user whose email doesn't even exist.
+
+13:42.200 --> 13:43.910
+If I send that off what do we get.
+
+13:43.940 --> 13:46.120
+We could have 400 as well.
+
+13:46.130 --> 13:51.530
+Now I'm going to change this back to the working example and we can go ahead and save this request.
+
+13:51.530 --> 13:56.570
+If I send it off I can verify everything is working as expected and I'm going to add it to my to do
+
+13:56.900 --> 13:58.510
+app collection.
+
+13:58.610 --> 14:02.480
+We're going to use the same scheme we've been using for all of our routes and we're going to go ahead
+
+14:02.510 --> 14:04.610
+and save them into the same collection.
+
+14:04.640 --> 14:08.030
+And with this in place we are ready to move on to the very final step.
+
+14:08.060 --> 14:15.110
+The final step inside of Adam is going to be to actually generate a new token and send it back and we're
+
+14:15.110 --> 14:18.680
+going to use the exact same generate auth token method.
+
+14:18.710 --> 14:20.870
+There is no reason to create a new one.
+
+14:20.870 --> 14:24.890
+This is why we created the method in the first place we created it to be reusable.
+
+14:25.070 --> 14:31.460
+Right here inside of our success case for when we do find the user we instead of actually responding
+
+14:31.490 --> 14:41.420
+are going to call user dot generate auth token and then we can go ahead and tack on a then call back.
+
+14:41.600 --> 14:45.920
+And then here will be getting the new token that was just created.
+
+14:45.980 --> 14:49.250
+Now with this in place we can go ahead and return.
+
+14:49.250 --> 14:54.560
+This is going to keep the chain alive so if we do run into any errors inside of the callback right here
+
+14:54.800 --> 15:00.980
+the 400 will be used as the response inside of year the only thing we need to do is respond and we're
+
+15:00.980 --> 15:04.980
+going to respond in a literally the exact same way responded up above.
+
+15:05.000 --> 15:09.560
+So much so that I can actually take the line copy it and paste it down below.
+
+15:09.650 --> 15:16.520
+Right inside of generate auth token here we use response header to set the X off after we set it equal
+
+15:16.520 --> 15:17.060
+to the token.
+
+15:17.060 --> 15:24.050
+We just generated and finally send the response body back as the user which we were already doing with
+
+15:24.050 --> 15:30.230
+this in place we can now save server J S for the final time and test that everything works as expected
+
+15:30.830 --> 15:32.300
+over inside of postman.
+
+15:32.300 --> 15:38.150
+What we need to do is make another log and request one that is valid and down here inside of headers.
+
+15:38.180 --> 15:40.480
+We should now have the X auth value.
+
+15:40.670 --> 15:48.640
+I can take this value and make a request to get users me to verify that it is indeed a valid token.
+
+15:48.680 --> 15:53.750
+I'm gonna head over to the users meet request and swap out the X auth token value for the one I just
+
+15:53.750 --> 15:55.170
+copied it to the clipboard.
+
+15:55.220 --> 15:59.810
+I'm going to send it off and right down here we get the user back which is fantastic.
+
+15:59.810 --> 16:05.990
+This means that the log in call is indeed working the token it sends back does work with our other private
+
+16:06.110 --> 16:06.970
+routes.
+
+16:07.220 --> 16:12.110
+Now that we have this in place we are done with a log in route in the next video we're going to write
+
+16:12.110 --> 16:14.270
+some test cases for the log in route.
+
+16:14.270 --> 16:18.510
+But for now we are done we can go ahead and wrap this one up by making a commit.
+
+16:18.530 --> 16:20.920
+I'm going to make sure all my atom files are saved.
+
+16:20.920 --> 16:26.750
+It looks like they are over inside of the terminal I can now shut down gnomon and run get status.
+
+16:26.750 --> 16:33.740
+Here we have our two changed files as expected which means we can go ahead and use get commit with the
+
+16:33.740 --> 16:43.010
+EM flag and a good message for this one would be ADD post users log in route.
+
+16:43.040 --> 16:46.480
+I'm going to make the commit push it up to get hub and that is it for this one.
+
+16:46.580 --> 16:49.950
+I will see you next time where we test the route we just created.

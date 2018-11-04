@@ -1,0 +1,817 @@
+WEBVTT
+
+00:00.570 --> 00:04.230
+In this video you're going to learn how to beef up your app configuration.
+
+00:04.320 --> 00:09.030
+You're going to look at a better way to store local environment variables and you learn how to set custom
+
+00:09.030 --> 00:15.990
+environment variables on Heroku because we have that secret key we use for our JWT tokens that currently
+
+00:15.990 --> 00:17.290
+is stored in the code.
+
+00:17.340 --> 00:21.960
+We want to break that out to an environment variable for our development and test environments and we
+
+00:21.960 --> 00:27.420
+also want to set that as a production environment variable on Heroku.
+
+00:27.420 --> 00:31.430
+Now the first thing we're going to do is tweak how we manage our local environment variables.
+
+00:31.440 --> 00:34.960
+Currently all of those values are provided inside of config.
+
+00:34.970 --> 00:35.470
+J.
+
+00:35.670 --> 00:42.030
+And right now this isn't a big problem but it's a really bad idea to have your config variables as part
+
+00:42.060 --> 00:43.560
+of your repository.
+
+00:43.560 --> 00:48.690
+Now currently we just have a port and a local database you are l which means if someone gets a hold
+
+00:48.690 --> 00:54.180
+of this information it's not a big deal but as we start adding secrets and third party API keys you
+
+00:54.180 --> 00:59.460
+are going to have valuable information and you do not want that to be added to the get repository.
+
+00:59.460 --> 01:02.220
+Now obviously your repo is probably going to be private.
+
+01:02.280 --> 01:06.450
+If you have secure information in it but even then it's just one more place.
+
+01:06.450 --> 01:08.590
+This data is floating around.
+
+01:08.610 --> 01:13.290
+The most important thing to remember as we go through this process is that only development and test
+
+01:13.290 --> 01:16.820
+environment variables are configured locally via some file.
+
+01:17.010 --> 01:22.020
+The production environment variables those are always going to get configured via either the Heroku
+
+01:22.020 --> 01:25.810
+command line tools or the Heroku web application.
+
+01:25.830 --> 01:29.120
+Now so far we've only used port and Mongo DB you or I.
+
+01:29.250 --> 01:34.680
+Both of those were provided for us by Heroku but we actually have the ability to set any environment
+
+01:34.680 --> 01:37.420
+variable we want any key value pair.
+
+01:37.560 --> 01:39.450
+We're going to look at how to do that a little bit later.
+
+01:39.450 --> 01:45.140
+For now let's focus on getting these environment variables outside of the config file.
+
+01:45.270 --> 01:46.070
+Now the config.
+
+01:46.080 --> 01:48.500
+JS file is not going to go away completely.
+
+01:48.510 --> 01:54.510
+The file is still going to exist and it's actually still going to run on both development test and production
+
+01:54.720 --> 01:57.760
+which means we're not going to be changing anything inside of the server.
+
+01:57.780 --> 02:03.720
+J.S. file We're still going to load this in regardless of the environment inside of the configfs file
+
+02:03.720 --> 02:04.140
+though.
+
+02:04.200 --> 02:09.090
+Instead of defining the environment variables for test and development we're simply going to load them
+
+02:09.090 --> 02:12.810
+in if we're on the test or development environment.
+
+02:12.810 --> 02:16.980
+Now to get this done we are going to add an if statement up above the code below will get removed a
+
+02:16.980 --> 02:17.620
+little bit later.
+
+02:17.640 --> 02:20.660
+But we are going to keep it around because we still need those values.
+
+02:20.880 --> 02:31.410
+If the environment equals development or the environment equals test now Previously we did different
+
+02:31.410 --> 02:33.170
+things depending on the environment.
+
+02:33.240 --> 02:36.160
+In this case we don't care whether it's test or development.
+
+02:36.210 --> 02:37.280
+We just want to run it.
+
+02:37.290 --> 02:43.120
+If it's either now inside of here what we're going to do is load in a seperate Jason File.
+
+02:43.140 --> 02:48.610
+This is where our development and test configuration variables are going to live and that file config.
+
+02:48.650 --> 02:49.330
+Jason.
+
+02:49.350 --> 02:52.070
+It is not going to be part of the Get repository.
+
+02:52.290 --> 02:54.420
+Now that's going to be a problem on test and development.
+
+02:54.420 --> 02:59.130
+If you don't have the file but on production or the file won't exist it's not going to be a problem.
+
+02:59.130 --> 03:04.860
+This code is never going to run because the production environment variable will not pass this condition
+
+03:05.490 --> 03:06.510
+inside of here.
+
+03:06.540 --> 03:11.220
+We are going to be doing some configuration but before we get into that let's go ahead and set up the
+
+03:11.220 --> 03:12.500
+Jasen file.
+
+03:12.540 --> 03:14.780
+We have the opportunity to set it up however we like.
+
+03:14.780 --> 03:18.610
+Whatever makes sense for our application inside of config.
+
+03:18.760 --> 03:26.370
+We're going to make a new file called config dot Jason and this file is just going to be a regular Jason
+
+03:26.430 --> 03:27.190
+File.
+
+03:27.210 --> 03:32.160
+We're going to have key value pairs on the root object where the key is the environment.
+
+03:32.250 --> 03:35.940
+Example test and the value is an object.
+
+03:35.970 --> 03:41.930
+We're going to have one more test and we're going to have one for development now inside of these objects
+
+03:41.930 --> 03:43.310
+for development and test.
+
+03:43.310 --> 03:46.320
+We can specify any local environment variables.
+
+03:46.340 --> 03:50.290
+For example inside of the local test environment we have two variables.
+
+03:50.390 --> 03:52.350
+We have port and Mongo DVH.
+
+03:52.400 --> 04:00.910
+I am going to set port inside of double quotes equal to the value 3000 and I can also set Mongo DB.
+
+04:00.920 --> 04:06.410
+You or I equal to whatever value I had previously.
+
+04:06.410 --> 04:11.100
+Now this is Jason's of the value which is a string is going to need to be wrapped in double quotes.
+
+04:11.100 --> 04:18.180
+I'm going to grab it from the config file and paste it into the adjacent file right inside of the quotes.
+
+04:18.200 --> 04:22.610
+Now this configures all of our test environment variables but we do still have some development ones
+
+04:22.610 --> 04:23.520
+we want to grab.
+
+04:23.540 --> 04:29.110
+We have port which is identical port get set to 3000.
+
+04:29.130 --> 04:35.890
+We also have Mongo DB you are-I and that is going to get set equal to a string and we're going to grab
+
+04:35.890 --> 04:40.820
+the value we used previously this can get copied and pasted right into the config.
+
+04:40.840 --> 04:43.480
+Jason File and we are done.
+
+04:43.780 --> 04:49.300
+Now that we've moved all the variables over to the new Jason File we can wipe our old if statement.
+
+04:49.300 --> 04:50.080
+I'm not going to delete it.
+
+04:50.080 --> 04:55.180
+I'm just going to comment it out so it doesn't actually run when we eventually run the program.
+
+04:55.450 --> 05:00.250
+Now the next thing we need to do is figure out how to get these values we need access to this object
+
+05:00.250 --> 05:02.570
+so we can properly set up process.
+
+05:02.710 --> 05:05.810
+EMV right here for example we set process.
+
+05:05.840 --> 05:08.290
+Ian VDM port equal to 3000.
+
+05:08.290 --> 05:13.140
+We need a system to do the exact same thing but it needs to use this Jasen file.
+
+05:13.150 --> 05:18.210
+Now the first thing we're going to do which is a great great feature is required the Jason File.
+
+05:18.280 --> 05:23.920
+And when you require Jason it actually automatically parses it into a javascript object.
+
+05:23.920 --> 05:27.760
+We don't have to use anything like Jason and parse it to get that done.
+
+05:27.790 --> 05:34.620
+This means we can make a variable called config and we can set it equal to the return result from require.
+
+05:34.720 --> 05:38.860
+And we're going to require a local file so we'll start with that forward slash.
+
+05:38.860 --> 05:44.560
+It's in the current directory so we can simply name it config dot Jason and adding the extension here
+
+05:44.560 --> 05:46.450
+because that is important.
+
+05:46.450 --> 05:49.190
+Now what we have access to is this config object.
+
+05:49.230 --> 05:52.600
+I'm going to go ahead and log it to the screen so we can see exactly what it looks like.
+
+05:52.600 --> 05:56.530
+Console that log config and we can save the file running config.
+
+05:56.700 --> 05:58.380
+J.S. from the terminal.
+
+05:58.690 --> 06:01.920
+Now normally we wouldn't be doing this but we can do it in this case.
+
+06:02.050 --> 06:07.450
+I'm going to run the file in the folder server then it's in the folder config file itself is called
+
+06:07.450 --> 06:08.350
+config.
+
+06:08.380 --> 06:08.900
+Yes.
+
+06:09.010 --> 06:10.470
+When we run it what do we get back.
+
+06:10.510 --> 06:16.480
+We get back our object with the test property that has port and Mongo DB you or I and we have our development
+
+06:16.480 --> 06:19.580
+property with the same two environment variables set up.
+
+06:19.660 --> 06:21.020
+This means we have our object.
+
+06:21.040 --> 06:27.410
+Now we just need to figure out how to use that object to set the process NVI object.
+
+06:27.430 --> 06:32.710
+The first thing we want to do is grab just the environment variables for the environment we're currently
+
+06:32.710 --> 06:33.100
+in.
+
+06:33.220 --> 06:38.800
+If Ian V is equal to development all we want is this object if it's equal to test all we want is the
+
+06:38.800 --> 06:41.180
+test variables right here.
+
+06:41.320 --> 06:46.020
+I'm going to create a separate variable called var V config.
+
+06:46.030 --> 06:51.100
+This is going to store just the config variables for the current environment and I'm going to set this
+
+06:51.100 --> 06:58.090
+equal to the config object and we're going to use bracket notation to grab the environment.
+
+06:58.150 --> 07:00.120
+I'm going to pass in the environment variable.
+
+07:00.220 --> 07:03.500
+So if Ian V is equal to test we're gonna grab the test property.
+
+07:03.590 --> 07:08.080
+If Ian B is equal to development we're going to grab that development property when you want to use
+
+07:08.080 --> 07:13.630
+a variable to access a property you have to use bracket notation like this.
+
+07:13.630 --> 07:18.190
+Now that we have the Ian V config variable all we need to do is a loop over it.
+
+07:18.250 --> 07:22.360
+And for each property for example port we want to set that on process.
+
+07:22.390 --> 07:27.980
+Ian V We want to do it for everything inside of the object which in this case is just two.
+
+07:28.000 --> 07:35.610
+Now the first two we're going to use to get that done is something called object ADOT keys object keys
+
+07:35.670 --> 07:38.660
+takes an object like NVI config.
+
+07:38.820 --> 07:41.980
+It gets all of the keys and it returns them as an array.
+
+07:42.180 --> 07:45.570
+We can go ahead and log this to the screen to see exactly what we get.
+
+07:45.570 --> 07:47.230
+I'm going to wrap it in parentheses.
+
+07:47.430 --> 07:48.850
+Call console dialog.
+
+07:48.870 --> 07:52.130
+Save the file and rerun it from the terminal.
+
+07:52.200 --> 07:57.330
+When I rerun the file from the terminal what we see is an array where we have the port environment variable
+
+07:57.330 --> 08:03.680
+in upper case and mango D-B you are I now that we have this all we need to do is loop over the array
+
+08:03.690 --> 08:05.970
+doing something for each item.
+
+08:06.080 --> 08:11.120
+I'm going to remove the council that lag call and we're going to call for each which as we know lets
+
+08:11.130 --> 08:13.200
+us loop over an array of items.
+
+08:13.200 --> 08:18.480
+It takes a callback function as it's one and only argument and that callback function gets called with
+
+08:18.540 --> 08:19.530
+each item.
+
+08:19.530 --> 08:22.200
+I'm going to call each item the key.
+
+08:22.200 --> 08:27.510
+This means that we're going to have a function which we'll get called with a key of port and a key of
+
+08:27.510 --> 08:28.500
+Mongo DB.
+
+08:28.530 --> 08:30.780
+You are I inside of here.
+
+08:30.900 --> 08:37.750
+We can then set process that EMV dot using bracket notation key.
+
+08:38.010 --> 08:41.200
+If the key is Port we're selling the port property on NV.
+
+08:41.430 --> 08:47.400
+If the key is Mongo db that you or I were setting the Mongo DB You are property on NV and we're going
+
+08:47.400 --> 08:51.760
+to set that equal to whatever the value is in EMV config.
+
+08:51.960 --> 08:58.360
+D-NV config and we're going to grab the value for the key just like this.
+
+08:58.400 --> 09:00.820
+And with this in place we are done.
+
+09:00.920 --> 09:05.180
+We don't have a much better system for managing that local configuration.
+
+09:05.180 --> 09:07.690
+I'm going to go ahead and remove the commented code.
+
+09:07.760 --> 09:08.820
+Save the file.
+
+09:09.020 --> 09:15.890
+And before we do anything else we want to ignore the configuration file via GET ignore inside of here.
+
+09:15.890 --> 09:18.350
+Currently we just ignore node modules.
+
+09:18.350 --> 09:20.690
+We're going to add a second line ignoring a file.
+
+09:20.810 --> 09:23.050
+The file is in the server directory.
+
+09:23.140 --> 09:28.930
+Then we're going to go into the config directory and the file itself is called config dot Jason.
+
+09:29.000 --> 09:34.320
+With this in place the configuration file will never get added to the repository.
+
+09:34.460 --> 09:40.620
+Over in the terminal if I run get status you can see the new file is nowhere in sight.
+
+09:40.720 --> 09:45.850
+We have our two modified changes showing up but we do not have that configuration file because it has
+
+09:45.850 --> 09:49.780
+been successfully ignored from the local repository.
+
+09:49.780 --> 09:54.700
+Now this was step one coming up with a system to manage local environment variables.
+
+09:54.700 --> 09:58.830
+This also lets us easily add a new environment variable.
+
+09:58.870 --> 10:02.460
+Right here we're going to add one called JWT secret.
+
+10:02.620 --> 10:13.050
+If you remember inside of the test seed file we reference ABC 1 2 3 2 times when we call it JWT dot
+
+10:13.170 --> 10:13.940
+sign.
+
+10:13.960 --> 10:19.280
+This is a pretty big problem and the problem also exists inside of our model user file.
+
+10:19.300 --> 10:25.160
+Down here we have a few calls to JWT sign and a call to JWT verify.
+
+10:25.330 --> 10:31.360
+Both of these have the exact same string inside of them but we need to do is instead of having the string
+
+10:31.360 --> 10:36.250
+inside of the code we need to pull that out into an environment variable and reference the environment
+
+10:36.250 --> 10:39.880
+variable right here and over in the seed file.
+
+10:39.880 --> 10:44.200
+Now the first step to that is going to be to create the environment variable.
+
+10:44.220 --> 10:51.000
+Let's go ahead and make one called uppercase JWT underscore secret and we're going to set this equal
+
+10:51.000 --> 10:53.940
+to whatever secret string we want to use.
+
+10:53.940 --> 10:56.040
+I recommend using something long and random.
+
+10:56.040 --> 10:58.370
+You do not need to use the same value.
+
+10:58.380 --> 11:01.230
+I'm going to go ahead and just press on the keyboard a little bit.
+
+11:01.230 --> 11:04.750
+Coming up with a nice set of numbers and letters.
+
+11:04.860 --> 11:08.910
+I don't need to actually remember this value because it's stored as a config variable.
+
+11:08.910 --> 11:13.470
+I'm going to also do the same thing for development right here.
+
+11:13.560 --> 11:20.730
+I'm going to set JWT secret equal to whatever I like and I'm gonna come up with a new and unique string.
+
+11:20.730 --> 11:25.250
+Something slightly different but pretty similar in terms of its randomness.
+
+11:25.260 --> 11:31.020
+Now that we have this in place we have a JWT secret variable we can access in both the test and development
+
+11:31.020 --> 11:34.760
+varments which means we can update the code inside of seed.
+
+11:34.810 --> 11:35.350
+J.S..
+
+11:35.460 --> 11:36.610
+End user dot.
+
+11:36.630 --> 11:38.090
+J.S. Right here.
+
+11:38.190 --> 11:46.680
+Instead of having our secret write in the code we will reference process and V dot J W T underscore
+
+11:46.710 --> 11:50.220
+secret and we're going to do the exact same thing down below.
+
+11:50.220 --> 11:55.980
+I'm going to copy this statement paste it right here and we can do the same thing over inside of user
+
+11:55.980 --> 11:56.360
+datcha.
+
+11:56.380 --> 12:00.570
+Yes I'm going to save and close the seed file inside of user.
+
+12:00.570 --> 12:07.410
+We're going to do it for JWT sign call and we're also going to do it down below for the JWT varify call
+
+12:07.410 --> 12:13.900
+which uses the same exact secret to verify a token was indeed created by who it says it was.
+
+12:13.920 --> 12:19.080
+Now that we have our user file updated we can save it and close it to make sure everything still works
+
+12:19.080 --> 12:21.300
+as expected with this new configuration.
+
+12:21.390 --> 12:27.430
+Over inside of the terminal I'm going to run NPM test and make sure all my test cases still pass and
+
+12:27.450 --> 12:28.880
+everything should still pass.
+
+12:28.890 --> 12:32.780
+We have our environment variables in place they're in place for the test environment.
+
+12:32.850 --> 12:36.080
+So as far as the tests are concerned nothing should have changed.
+
+12:36.090 --> 12:40.470
+All we've done is changed how the environment variables get set.
+
+12:40.530 --> 12:44.740
+Over here you can see we have 22 passing tests which is fantastic.
+
+12:44.760 --> 12:51.270
+We can also run a quick development test by starting up the app using node server server J.S. and running
+
+12:51.270 --> 12:54.530
+a few calls from postman for example over inside a post.
+
+12:54.530 --> 12:59.620
+Man I could create a new user using the post user's request.
+
+12:59.970 --> 13:01.660
+I'm going to make a new user with the email.
+
+13:01.680 --> 13:04.320
+Andrew 9 at example dot com.
+
+13:04.500 --> 13:06.430
+If I send that off I get a 200.
+
+13:06.450 --> 13:13.980
+I get my X off hetter back I can grab that had a value and tried to do something like fetch my dues.
+
+13:14.040 --> 13:15.630
+I'm going to go ahead and fetch my dues.
+
+13:15.630 --> 13:18.450
+There shouldn't be any because I haven't created any.
+
+13:18.450 --> 13:22.110
+Remember this is a private call so we're going to add an X header.
+
+13:22.110 --> 13:25.710
+We're going to paste in the value we send it off we get no tattoos but that's fine.
+
+13:25.710 --> 13:26.500
+We don't have any.
+
+13:26.550 --> 13:31.410
+As long as the call was successfully authenticated then we can be pretty sure all of our environment
+
+13:31.410 --> 13:34.210
+variables were configured properly.
+
+13:34.230 --> 13:38.040
+Now that we have our local configuration in place it's time to talk about how we're going to configure
+
+13:38.280 --> 13:44.700
+the JWT secret variable for production locally we just specify it here but when we want to configure
+
+13:44.700 --> 13:48.630
+on Heroku we have to do something slightly different over inside of the terminal.
+
+13:48.630 --> 13:53.110
+We're going to take a look at a series of Heroku commands to get the job done.
+
+13:53.370 --> 14:00.130
+Let's go ahead and clear the terminal output and the first command we're going to run Heroku config
+
+14:00.130 --> 14:02.250
+is something we've already executed.
+
+14:02.260 --> 14:07.360
+We ran this previously to get the value of Mongo DB you or I here's my value.
+
+14:07.390 --> 14:09.840
+This should be the only one that shows up.
+
+14:09.850 --> 14:14.950
+Now we know there is a poor environment variable configured somewhere in the app that has a Heroku specific
+
+14:14.950 --> 14:16.010
+environment variable.
+
+14:16.060 --> 14:20.190
+You're not going to be able to update that value so it's not visible here.
+
+14:20.290 --> 14:23.680
+Now we have one environment variable showing up a key value pair.
+
+14:23.710 --> 14:26.850
+We can go ahead and actually set our own to do this.
+
+14:26.860 --> 14:31.380
+We're going to run Heroku space config Colan set.
+
+14:31.480 --> 14:33.920
+This takes a key value pair.
+
+14:34.000 --> 14:38.950
+The key could be something like name and the value which comes after the equal sign could be whatever
+
+14:38.950 --> 14:39.580
+you like.
+
+14:39.610 --> 14:41.700
+Go ahead and set your name right here.
+
+14:41.740 --> 14:44.940
+I'm going to set Andrew then I'm going to hit enter.
+
+14:45.100 --> 14:48.080
+Now as you can see it's setting and restarting the application.
+
+14:48.100 --> 14:52.750
+This means that it's going to restart the app so the app has access to the new environment variable
+
+14:52.960 --> 14:58.210
+and we can run Heroku config again and this time around we should see our environment variable.
+
+14:58.210 --> 14:58.750
+And we do.
+
+14:58.750 --> 15:02.610
+Sitting right here we have name and it's set equal to Andrew.
+
+15:02.620 --> 15:07.840
+Now aside from viewing and setting variables we can also go ahead and get an individual environment
+
+15:07.840 --> 15:13.130
+variables value Heroku config dot get lets us do that.
+
+15:13.210 --> 15:17.080
+All we do is specify the name of the environment variable to fetch.
+
+15:17.110 --> 15:22.690
+In this case I could specify name and right here and you can see Andrew returns the last command we
+
+15:22.690 --> 15:31.030
+can use to manage these environment variables is Heroku config colon on set unset removes an environment
+
+15:31.030 --> 15:31.780
+variable.
+
+15:31.780 --> 15:34.390
+Now we never want to unset Mongo DB You are right.
+
+15:34.430 --> 15:42.100
+But in this case we could onsets name we use Heroku config on set followed by the uppercase name environment
+
+15:42.100 --> 15:43.000
+variable.
+
+15:43.120 --> 15:46.330
+We run it this onsets it and restarts the app.
+
+15:46.330 --> 15:51.550
+And if we run Heroku config for a final time you can see we're right back where we started.
+
+15:51.550 --> 15:57.620
+Now that we know how to set these environment variables we need to do is set one called JWT secret.
+
+15:57.700 --> 16:03.940
+We're setting this to make sure our calls to JWT seinen JWT varify don't fail on production.
+
+16:04.030 --> 16:07.830
+Currently they would because the environment variable would not be defined.
+
+16:07.840 --> 16:14.500
+Go ahead and take a quick moment to set a JWT underscore environment variable setted equal to some random
+
+16:14.500 --> 16:14.930
+string.
+
+16:14.950 --> 16:16.090
+Then go ahead and fetch it.
+
+16:16.090 --> 16:18.700
+Making sure it was set properly when you're done.
+
+16:18.730 --> 16:22.280
+You can go ahead and click play.
+
+16:22.350 --> 16:22.840
+All right.
+
+16:22.840 --> 16:24.150
+Not one should have been pretty easy.
+
+16:24.150 --> 16:29.600
+All you had to do was run Heroku config Kolins set to set the environment variable.
+
+16:29.640 --> 16:32.860
+We're going to create one called JWT underscore secret.
+
+16:32.940 --> 16:38.430
+The exact same name as the local environment variable and as the environment variable we referenced
+
+16:38.430 --> 16:39.390
+in our files.
+
+16:39.390 --> 16:41.470
+It's really important that all of these line up.
+
+16:41.490 --> 16:44.820
+Otherwise the program is not going to work as expected.
+
+16:44.820 --> 16:49.060
+Now back inside of the terminal we can go ahead and set this equal to using the equal sign.
+
+16:49.060 --> 16:52.620
+Some sort of random string you can go ahead and jam the keyboard for a little bit.
+
+16:52.620 --> 16:54.620
+Coming up with something good.
+
+16:54.740 --> 16:59.940
+Then we can go ahead and run the command right here you can see it setting JWT secret and it's restarting
+
+16:59.940 --> 17:01.160
+the application.
+
+17:01.200 --> 17:07.860
+If I run Heroku config we are going to see our environment variable showing up which is fantastic if
+
+17:07.860 --> 17:09.860
+you're seeing this here with the value you set.
+
+17:09.870 --> 17:15.440
+Then you are done with all of our config code properly working we can go ahead and make a commit.
+
+17:15.660 --> 17:17.760
+I'm going to run get status.
+
+17:17.760 --> 17:21.150
+Here we see we have our For changed files which is expected.
+
+17:21.150 --> 17:26.730
+I can then run get commit with the a m flag to leave a commit message a good message for this one is
+
+17:26.820 --> 17:32.360
+update config to use Jason File.
+
+17:32.770 --> 17:37.330
+I'm also going to push this up to get and this is where will stop for this one in the next video which
+
+17:37.330 --> 17:42.690
+is the final video for the section we're going to go ahead and get the app running on Heroku once again.
+
+17:42.730 --> 17:43.360
+Stay tuned.
+
+17:43.360 --> 17:45.010
+I will see you soon.

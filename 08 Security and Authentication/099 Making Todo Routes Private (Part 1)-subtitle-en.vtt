@@ -1,0 +1,523 @@
+WEBVTT
+
+00:00.390 --> 00:06.450
+All of our routes are complete it's time to start making it to do route's private and only letting users
+
+00:06.630 --> 00:08.970
+manage the dues they've created.
+
+00:08.970 --> 00:14.310
+Now in order to get started we're going to need to make a change to the to do model currently we store
+
+00:14.310 --> 00:20.760
+the text the completed value and the completed at time stamp what we're going to also need to store
+
+00:20.790 --> 00:24.710
+is in the ID of the user who created that to do.
+
+00:24.780 --> 00:29.510
+This is going to let us make sure the user does indeed have access to manage this data.
+
+00:29.520 --> 00:30.360
+Now to get started.
+
+00:30.360 --> 00:36.720
+Down below after the completed at options object we're going to make a brand new one called underscore
+
+00:36.960 --> 00:37.920
+creator.
+
+00:37.920 --> 00:40.680
+Now you could call this property anything you want.
+
+00:40.680 --> 00:46.860
+I'm using the underscore to let the person who's using the model know it is an object id and the creator
+
+00:46.860 --> 00:51.930
+seems like a good name because it stores the ID of the user who created it.
+
+00:51.930 --> 00:55.060
+Next up we can go ahead and specify a few quick options.
+
+00:55.110 --> 00:56.620
+We are going to require this.
+
+00:56.640 --> 00:59.250
+So I will set required equal to true.
+
+00:59.460 --> 01:04.740
+You're no longer going to be able to make a to do unless you have an ID which means you're logged in.
+
+01:04.770 --> 01:07.620
+The other option we're going to specify is the type.
+
+01:07.620 --> 01:13.150
+Now in this case the type is going to be an object ID in order to set a type equal to an object ID.
+
+01:13.170 --> 01:15.820
+We're going to go into mongoose.
+
+01:15.900 --> 01:21.880
+We're going to access schema which we've used inside of the users file then we're going to go ahead
+
+01:21.880 --> 01:29.670
+and access the types object and on there there is a type Object upper case I lowercase D.
+
+01:29.710 --> 01:35.580
+This is what we need to set our type to in order to set up the Creator property.
+
+01:35.750 --> 01:41.980
+From here we can now save the to do model file and head into our test see data inside of here.
+
+01:41.980 --> 01:43.590
+We currently have two to do.
+
+01:43.720 --> 01:45.770
+These are the seed to do we add to the database.
+
+01:45.770 --> 01:47.470
+They're available in our test cases.
+
+01:47.470 --> 01:52.840
+The problem is they're not associated with the user but we're going to do a set creator for both for
+
+01:52.840 --> 01:53.810
+the first to do.
+
+01:53.830 --> 02:00.270
+I'm going to set underscore creator equal to the object idea of the first user which we have access
+
+02:00.270 --> 02:04.910
+to via user one ID user one ID.
+
+02:05.100 --> 02:10.770
+Perfect and we're going to do the exact same thing for the second to do item down at the very bottom
+
+02:10.770 --> 02:12.220
+below completed at.
+
+02:12.360 --> 02:19.420
+I'm going to add underscore creator and for this one will set the ID equal to user to ID.
+
+02:19.480 --> 02:24.720
+Now when we run the test suite we'll be able to access the users to Dewes because we've associated each
+
+02:24.720 --> 02:27.420
+to do with a real user.
+
+02:27.420 --> 02:31.660
+Now the first route that you are going to convert is the post to do's route.
+
+02:31.690 --> 02:34.350
+This is the route that creates new to do.
+
+02:34.440 --> 02:38.750
+Currently when we make art to do we set the text equal to the body text.
+
+02:38.760 --> 02:42.240
+We also need to set the creator property right here.
+
+02:42.240 --> 02:49.140
+Now in order to make this route private as we know we have to add the authenticate middleware end with
+
+02:49.140 --> 02:53.860
+this in place we now have access to the user and the token that was used.
+
+02:53.880 --> 02:58.530
+All of that is configured over inside of the authenticate middleware right here.
+
+02:58.650 --> 03:04.380
+That means inside of our post to Dewes route we can now set to create a property when we make our new
+
+03:04.380 --> 03:05.840
+to do right here.
+
+03:05.940 --> 03:12.660
+I'm going to set underscore creator equal to the request user property and then we're going to go ahead
+
+03:12.660 --> 03:14.290
+and grab the idea.
+
+03:14.310 --> 03:16.790
+This is the ID of the user.
+
+03:16.920 --> 03:17.790
+And there we go.
+
+03:17.790 --> 03:21.400
+Our post to Doo's route has been successfully updated.
+
+03:21.480 --> 03:23.800
+Honestly not too bad.
+
+03:24.120 --> 03:28.260
+Now before we go any further we're also going to tweak the get to do's route then we can go ahead and
+
+03:28.260 --> 03:30.750
+verify that all of this works as expected.
+
+03:30.820 --> 03:31.880
+Forget to do's.
+
+03:31.890 --> 03:35.150
+We're going to also add that authenticate middleware.
+
+03:35.310 --> 03:40.020
+This is going to require that an X auth token is used when you're fetching to do's and instead of thatching
+
+03:40.040 --> 03:43.560
+all to do is we're simply going to fetch to do's.
+
+03:43.560 --> 03:48.870
+We're going to try to queery and we're going to look for to Dewes where the underscore creator property
+
+03:49.200 --> 03:56.230
+equals the ID of the user that is currently authenticated request user underscore ID.
+
+03:56.310 --> 04:01.660
+Now we're only going to be returning to Doo's that the user who's logged in actually created.
+
+04:01.770 --> 04:07.050
+Which means that if user one adds some to Doo's user 2 is not going to be able to view them when they
+
+04:07.050 --> 04:08.770
+try to fetch all of the to do's.
+
+04:08.820 --> 04:11.210
+It's no longer all the to do is listed in the database.
+
+04:11.210 --> 04:15.880
+It's now all the to do's for the currently logged in user.
+
+04:15.960 --> 04:20.700
+I'm going to go ahead and save server JSC and we can start up our project over in the terminal.
+
+04:20.700 --> 04:26.460
+I'm going to use gnomon to startup the file in the server directory called server.
+
+04:26.540 --> 04:31.680
+J.S. once our server is up on port three thousand we can go ahead and move into post-mission fire off
+
+04:31.680 --> 04:35.250
+both of these requests and see exactly what happens.
+
+04:35.280 --> 04:39.990
+First up I am going to wipe the data in robo mango since we've added some new properties.
+
+04:39.990 --> 04:45.870
+I can simply drop the to do app database then over inside a postman we can get started by signing up
+
+04:45.900 --> 04:47.700
+a user for it here.
+
+04:47.790 --> 04:52.140
+I'm going to go ahead and sign up a new user using my default body data.
+
+04:52.140 --> 04:57.270
+This is going to give us an X auth token and that token is going to be used to make the two requests
+
+04:57.570 --> 04:58.140
+right here.
+
+04:58.200 --> 05:02.040
+I'm going to grab the X auth token value making sure to copy the entire thing.
+
+05:02.250 --> 05:07.860
+I'm going to copy it to the clipboard and we'll get started by creating a new do using POST forward
+
+05:07.860 --> 05:14.480
+slash to do's inside of the headers for the call we are going to need to add a new one the X or header
+
+05:15.150 --> 05:20.140
+X hyphen off and then we'll paste the X or token in as the value.
+
+05:20.190 --> 05:24.020
+Next up that we can go ahead and send this request off when we do.
+
+05:24.090 --> 05:24.570
+What do we get.
+
+05:24.570 --> 05:26.010
+We get a 200 back.
+
+05:26.070 --> 05:31.740
+Meaning that everything went as expected and down below we have our to do we have R-TX property we have
+
+05:31.740 --> 05:37.340
+our Creator ID we have the underscore ID property completed at and completed.
+
+05:37.360 --> 05:39.410
+This is fantastic.
+
+05:39.420 --> 05:45.720
+Now when we make a to do the exit off token is used to fetch the user and the user's ID is stored right
+
+05:45.750 --> 05:46.470
+here.
+
+05:46.470 --> 05:50.700
+If I were to go ahead and wipe the X or token value and try to create a another to do we're going to
+
+05:50.700 --> 05:51.790
+get a 401.
+
+05:51.930 --> 05:53.110
+Unauthorized.
+
+05:53.190 --> 05:57.930
+Now the next thing we need to test out is that when we fetch to do's we only get the dues back for the
+
+05:57.930 --> 06:00.070
+user we created to do this.
+
+06:00.150 --> 06:02.860
+I'm going to sign up a second user.
+
+06:02.890 --> 06:08.050
+Mean many as post users I'm going to create Andrew to add example dot com.
+
+06:08.090 --> 06:13.590
+Send that off and I'm going to copy this X Auth. hetter inside of my clipboard.
+
+06:13.750 --> 06:18.400
+Make sure to grab the entire thing from the beginning to the very end sometimes it goes off the screen.
+
+06:18.400 --> 06:21.140
+Sometimes it wraps to a second line.
+
+06:21.160 --> 06:26.880
+Now that they have the X auth token value we can make a new to do using post to Duse I'm going to go
+
+06:26.880 --> 06:28.260
+ahead and set the X off.
+
+06:28.260 --> 06:32.800
+Heather equal to this value we're going to send it off and we get our to do.
+
+06:32.800 --> 06:38.950
+Back now when we called get to choose with the author value we should only see one to do coming back
+
+06:39.130 --> 06:43.720
+even though there's two in the database because the second to do the one we won't see was created by
+
+06:43.720 --> 06:45.220
+a different user.
+
+06:45.220 --> 06:48.650
+Right here we'll set X off equal to the token for the second user.
+
+06:48.700 --> 06:51.100
+We're going to send off the request and what do we get back.
+
+06:51.100 --> 06:53.480
+We get back just one to do item.
+
+06:53.710 --> 06:59.320
+If we open up robo mango though and we refresh to see the database we dropped we will be able to see
+
+06:59.320 --> 07:03.550
+that there are indeed two documents inside of the two do's collection.
+
+07:03.580 --> 07:08.200
+Right here we have the two but we're only able to see one because we've made it private.
+
+07:08.200 --> 07:13.060
+Now since we've made these routes private our test cases are going to fail if we head into the terminal
+
+07:13.270 --> 07:16.660
+and try to run the test suite using NPM test.
+
+07:16.660 --> 07:18.390
+We're going to see that we get a lot of 401.
+
+07:18.400 --> 07:22.600
+On authorized because the test cases they're not specifying an X off Hetter.
+
+07:22.780 --> 07:28.300
+So when we try to fire off the requests to create to do's and fetch to do's you can see right here we
+
+07:28.300 --> 07:29.470
+expect to hundreds.
+
+07:29.470 --> 07:32.620
+But we get 4 0 ones back in order to fix this.
+
+07:32.620 --> 07:39.550
+All we have to do is make some small tweaks to the contents of our server test file up at the very top
+
+07:39.550 --> 07:43.830
+our first to describe blocks are for the two routes we just changed.
+
+07:43.870 --> 07:47.280
+Here we have our test cases for post to do's and down below.
+
+07:47.280 --> 07:54.040
+We have our test cases for get to do's we're going to go ahead and update these to use the proper authentication
+
+07:54.040 --> 07:54.940
+mechanisms.
+
+07:55.030 --> 08:02.620
+First up the very first test it should create a new to do here we need to specify an X auth token value
+
+08:02.830 --> 08:04.630
+using the set method.
+
+08:04.870 --> 08:11.200
+We're going to set X hyphen off equal to the value we have over in the data we're going to go into the
+
+08:11.200 --> 08:11.970
+users array.
+
+08:12.040 --> 08:17.110
+We're going to grab the first user then we're going to go into the tokens a grab the very first token
+
+08:17.110 --> 08:21.210
+and access that token property with the token in place.
+
+08:21.240 --> 08:26.380
+This test case is now going to pass all of the assertions we make below are not going to be affected
+
+08:26.380 --> 08:32.170
+by this change we'll still expect the body to have a text property equal to the text we set.
+
+08:32.170 --> 08:37.450
+And when we find that to do inside of the database we're going to expect that the text also equals the
+
+08:37.450 --> 08:38.470
+text we set.
+
+08:38.500 --> 08:40.370
+Nothing needs to change here.
+
+08:40.510 --> 08:42.460
+The next test case is going to be pretty similar.
+
+08:42.520 --> 08:46.150
+It should not create to do with invalid body data.
+
+08:46.150 --> 08:48.770
+We're going to need to set the X off Hetter value.
+
+08:48.820 --> 08:53.860
+I'm going to go ahead and copy the line up above by adding it to the clipboard and pasting it down below
+
+08:53.890 --> 08:55.990
+just below our call to post.
+
+08:55.990 --> 08:58.510
+Now we're passing along a valid X auth token.
+
+08:58.630 --> 09:03.730
+We're going to go ahead and try to make the request to create an invalid to do and at the very end we
+
+09:03.730 --> 09:09.280
+expect that the total number of documents in the dues collection should be two and that is still valid
+
+09:09.610 --> 09:11.230
+regardless of who created it.
+
+09:11.230 --> 09:14.490
+We have to see it to do's in the database.
+
+09:14.500 --> 09:16.600
+Now the next test is going to be a little different.
+
+09:16.630 --> 09:21.700
+This is our test for getting all that to do is the get forward slash to Dewes route.
+
+09:21.700 --> 09:26.800
+We're still going to set up the X auth Hetter but we are going to need to make some changes to our expectation
+
+09:26.800 --> 09:27.700
+down below.
+
+09:27.700 --> 09:32.830
+Currently we expect that we're going to get to Dewes back but we know that's no longer the case now
+
+09:32.830 --> 09:37.400
+that the dues are associated with the users we're going to get just one to do back.
+
+09:37.450 --> 09:42.920
+We have one to do where the creator property is set to the ID for the first user.
+
+09:42.940 --> 09:45.620
+That means over inside of server tasks.
+
+09:45.700 --> 09:51.600
+We're going to change this two to a one which is the correct number of dues that should get returned.
+
+09:51.820 --> 09:56.910
+Now that we have our test cases updated for the routes we made prior that we can go ahead and rerun
+
+09:57.040 --> 09:58.610
+everything in the test suite.
+
+09:58.660 --> 10:01.830
+Now it's fine if some of our other tests fail because of these changes.
+
+10:01.960 --> 10:07.090
+As long as the three tests we just tweaked pass we are good to go and right up top you can see just
+
+10:07.150 --> 10:09.370
+that happens both of our posts to Doo's.
+
+10:09.370 --> 10:15.670
+Tests are passing and our get to Doo's case is indeed correct and that's fantastic.
+
+10:15.670 --> 10:21.220
+We've now converted a few of our to do routes and the next video we're going to convert the final ones
+
+10:21.310 --> 10:25.430
+wrapping up the process of associating users with to Dewes.
+
+10:25.570 --> 10:28.870
+Let's take just a quick moment to summarize how we did this.
+
+10:28.870 --> 10:34.680
+The first thing we needed to do was update the to do model if they to do is going to be associated with
+
+10:34.680 --> 10:40.600
+a user We need a way to set up that association and that happens right here on the to do we store the
+
+10:40.600 --> 10:46.560
+ID of the user later on we can go ahead and verify that a user created that to do just by checking this
+
+10:46.570 --> 10:47.730
+property.
+
+10:47.740 --> 10:53.410
+Now once we created this property we also went ahead and added authentication to both of these routes.
+
+10:53.420 --> 10:58.690
+This means that we have access to the user and the token right inside of the request call back and we
+
+10:58.690 --> 11:04.900
+can do stuff like this where we set the creator property equal to the ID of the logged in user or something
+
+11:04.900 --> 11:10.840
+like this where we fetch all the dues but we only return the ones where the creator property equals
+
+11:10.900 --> 11:17.380
+the ID of the currently logged in user by adding authentication using the middleware and by using the
+
+11:17.380 --> 11:22.920
+ID inside of our queries we're going to be able to make the to do's private now that we have this in
+
+11:22.920 --> 11:24.440
+place we are halfway done.
+
+11:24.490 --> 11:25.660
+We're not going to commit just yet.
+
+11:25.660 --> 11:29.020
+We'll wait until we have all the conversion done in the next video.
+
+11:29.060 --> 11:31.960
+We're going to finish converting all the other routes.
+
+11:31.970 --> 11:32.570
+Stay tuned.
+
+11:32.580 --> 11:34.200
+I will see you then.

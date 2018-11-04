@@ -1,0 +1,700 @@
+WEBVTT
+
+00:00.140 --> 00:05.130
+And now that you know a bit about hashing and Jason Webb tokens Let's start integrating that into the
+
+00:05.130 --> 00:06.880
+to do API.
+
+00:07.080 --> 00:09.830
+The first place we're going to integrate that is inside of our post.
+
+00:09.840 --> 00:11.370
+Users sign up call.
+
+00:11.400 --> 00:15.660
+Currently we do not return an authentication token which is not cool.
+
+00:15.660 --> 00:19.020
+The user shouldn't need to sign up and then make a separate logging request.
+
+00:19.050 --> 00:21.330
+They just signed up give them a token back.
+
+00:21.330 --> 00:27.000
+Now we could indeed put all of the code for generating this Jason web token right here inside of our
+
+00:27.000 --> 00:28.710
+express route handler.
+
+00:28.710 --> 00:34.890
+But we're going to be reusing this code in multiple places both the sign up and log in express routes.
+
+00:34.890 --> 00:37.430
+They're both going to require this functionality.
+
+00:37.530 --> 00:42.830
+So it makes a lot more sense to break this out into a reusable method that we can take advantage of
+
+00:42.840 --> 00:44.910
+in both there are two types of methods.
+
+00:44.910 --> 00:50.700
+We're going to be exploring in this video we're going to be exploring model methods and instance methods
+
+00:50.880 --> 00:56.250
+modeled methods are called on the upper case you use your object and instance methods are called on
+
+00:56.250 --> 01:00.510
+an individual user like the new user we just created right here.
+
+01:00.510 --> 01:07.370
+A good example of an instance method will be creating in this video is a method called generate auth
+
+01:07.520 --> 01:14.060
+token the generate auth token method is going to be responsible for adding a token on it to the individual
+
+01:14.060 --> 01:17.190
+user document saving that and returning the token.
+
+01:17.270 --> 01:19.430
+So we can send it back to the user.
+
+01:19.430 --> 01:22.220
+This requires the individual document in order to work.
+
+01:22.220 --> 01:29.120
+We can generate a token if we don't have access to things like the user id and access to updating that
+
+01:29.150 --> 01:30.290
+individual user.
+
+01:30.290 --> 01:33.260
+So we can add the token to its tokens array.
+
+01:33.290 --> 01:37.750
+Your model methods on the other hand do not require an individual document.
+
+01:37.760 --> 01:41.250
+A good example of a model method would be something like.
+
+01:41.250 --> 01:47.170
+Find by token fine by token doesn't exist inside of mongoose.
+
+01:47.250 --> 01:53.190
+Find by one does find it does but find by token is going to be a custom model method.
+
+01:53.190 --> 01:54.210
+We're going to create.
+
+01:54.330 --> 01:59.730
+It's going to take that JWT token that the user sends and one of their secure requests we're going to
+
+01:59.730 --> 02:04.800
+find the individual user and we'll return that user to the caller.
+
+02:04.800 --> 02:08.520
+Both of these are going to be really useful in getting authentication done.
+
+02:08.550 --> 02:14.610
+For now though we're going to stick with just creating our generate auth token method over inside of
+
+02:14.610 --> 02:17.510
+the user model file before we can even do that.
+
+02:17.520 --> 02:20.180
+We do have to make one quick tweak.
+
+02:20.280 --> 02:25.740
+Now the tweak I'm about to make is not going to update the functionality of the app at all.
+
+02:25.740 --> 02:31.270
+We're simply restructuring our app for flexibility in order to add on these methods.
+
+02:31.350 --> 02:34.560
+We have to switch how we create our user model.
+
+02:34.560 --> 02:39.450
+I'm going to delete this commented out code as it's no longer useful and we're going to make a variable
+
+02:40.290 --> 02:42.880
+called user schema.
+
+02:43.080 --> 02:48.690
+The user schema variable is going to store the schema for a user which means it's going to store all
+
+02:48.690 --> 02:52.490
+of the properties kind of like the ones we've defined right here.
+
+02:52.500 --> 02:56.850
+Now I don't mean kind of like I mean identical to right here.
+
+02:56.850 --> 03:02.520
+We're going to set user schema equal to a new schema in mongoose that is done by using the new keyword
+
+03:03.830 --> 03:09.800
+going on to the mongoose object and accessing the uppercase s schema property.
+
+03:09.790 --> 03:15.560
+The schema property lets you define a new schema and this is what we need in order to tack on these
+
+03:15.560 --> 03:16.670
+custom methods.
+
+03:16.670 --> 03:21.710
+We can't add methods onto user so we have to switch how we're generating the model.
+
+03:21.740 --> 03:27.530
+Now the schema constructor function it takes an object and on that object we define all of the attributes
+
+03:27.590 --> 03:28.730
+for our document.
+
+03:28.760 --> 03:31.120
+We actually have all of those defined right here.
+
+03:31.130 --> 03:39.550
+We can literally take this object cut it out and replace it right here now we have our schema and the
+
+03:39.550 --> 03:45.220
+only thing we need to do to restore the old functionality is pass it in as the second argument user
+
+03:46.060 --> 03:47.070
+schema.
+
+03:47.260 --> 03:51.750
+At this point we have made zero changes to the functionality of our application.
+
+03:51.880 --> 03:58.600
+We simply restructured allowing us to out on these methods to create a method right below where we define
+
+03:58.600 --> 03:59.560
+the user schema.
+
+03:59.680 --> 04:08.350
+I'm going to add something on to user schema dot methods user schema methods is an object and on this
+
+04:08.350 --> 04:11.100
+object we can add any method we like.
+
+04:11.110 --> 04:13.690
+These are going to be your instance methods.
+
+04:13.690 --> 04:21.230
+In our case we're going to be adding an instance method called generate auth token your instance methods
+
+04:21.230 --> 04:26.480
+do have access to the individual document which is great because we need that information in order to
+
+04:26.510 --> 04:29.300
+create our Jason Webb took it.
+
+04:29.360 --> 04:30.910
+Now we're going to set the sequel to a function.
+
+04:30.920 --> 04:35.870
+But I also notice I'm not going to be using an arrow function I'm going to be using a regular old function
+
+04:35.930 --> 04:38.000
+with the function keyword.
+
+04:38.030 --> 04:43.100
+Now as you've noticed throughout the course I've mostly used arrow functions era functions that do not
+
+04:43.100 --> 04:43.830
+bind a.
+
+04:43.850 --> 04:51.140
+This keyword we need this keyword for our methods because this keyword stores the individual document.
+
+04:51.260 --> 04:57.110
+Which means that we can actually create a variable called user setting an equal to this by doing this.
+
+04:57.110 --> 04:59.750
+It's a lot more clear exactly what we're manipulating.
+
+04:59.750 --> 05:03.980
+Instead of manipulating this which could be anything we're simply going to be manipulating the user
+
+05:04.220 --> 05:08.120
+which is an identifier that we're used to in other places in our file.
+
+05:08.210 --> 05:14.000
+Now that we have access to the individual document the document where the method was called on for example
+
+05:15.010 --> 05:22.290
+this document we're going to be able to define what we want to do over inside of user J s we can now
+
+05:22.290 --> 05:23.230
+fill this out.
+
+05:23.310 --> 05:30.370
+We need to get an access value and a token value in order to create the new token inside of the document.
+
+05:30.390 --> 05:37.060
+First up access really simple a variable called Access which gets set equal to the string off.
+
+05:37.110 --> 05:38.910
+Nothing fancy there.
+
+05:38.910 --> 05:43.710
+Next up though we are going to be making our token variable which means we're going to need to use that
+
+05:43.710 --> 05:51.100
+same JWT sign method we used over in the hashing file to generate the token before we can actually call
+
+05:51.100 --> 05:52.500
+JWT sign.
+
+05:52.530 --> 05:55.360
+We do need to require it up at the very top of the file.
+
+05:55.680 --> 05:57.250
+I'm going to make a constant.
+
+05:57.390 --> 06:04.190
+I'm going to call this constant JWT and we'll set it equal to the return result from requiring Jason
+
+06:04.670 --> 06:06.470
+Weibe token.
+
+06:06.780 --> 06:12.520
+Now that we have JWT in place we can call it down below setting the token equal to J.
+
+06:12.620 --> 06:15.260
+T Dot sign.
+
+06:15.330 --> 06:20.190
+We got a call sign with those two arguments the first one being the object that has the data we want
+
+06:20.190 --> 06:20.880
+to sign.
+
+06:20.970 --> 06:26.550
+And the second one being some secret value we're eventually going to take this secret value out of our
+
+06:26.550 --> 06:29.000
+code and move it into a configuration variable.
+
+06:29.040 --> 06:31.140
+But for now you can add some secret value.
+
+06:31.170 --> 06:34.940
+I'm going to use ABC 1 2 3.
+
+06:34.990 --> 06:41.670
+The actual data we want to sign is first up the user id I'm going to create an underscore ID property
+
+06:41.670 --> 06:47.670
+to store this value and we can grab it off of user like we would anywhere else in our server file user
+
+06:48.270 --> 06:53.640
+dot underscore ID dot to hack's string.
+
+06:53.640 --> 06:58.410
+We want to pass in the string value as opposed to the object id and the other property we're going to
+
+06:58.410 --> 07:00.540
+be adding on is access.
+
+07:00.690 --> 07:01.450
+I can use yes.
+
+07:01.480 --> 07:08.020
+6 to add the access property setting an equal to the Access variable which is the string off.
+
+07:08.040 --> 07:15.080
+Now this returns our object going to call to string to get back our string token.
+
+07:15.080 --> 07:20.660
+Now all of our data is generated and all we need to do is update the user tokens array.
+
+07:20.840 --> 07:25.520
+It's a regular array which means we can use regular array methods to manipulate it.
+
+07:25.610 --> 07:33.020
+What I'm going to do is call user Dom tokens which is an empty array by default dot push which lets
+
+07:33.020 --> 07:35.110
+us push on something new.
+
+07:35.150 --> 07:41.200
+In this case we're going to be pushing on a new object with those two properties access and token.
+
+07:41.390 --> 07:46.910
+We have access and token variables defined right here which means we can use the ESX object definition
+
+07:46.910 --> 07:52.820
+syntax specify access and specify token with this in place.
+
+07:52.850 --> 07:56.180
+We now have changes made to the user model.
+
+07:56.180 --> 07:59.000
+The last thing to do is actually save those changes.
+
+07:59.000 --> 08:04.970
+Currently we update the local user model but we do not save it in order to save it.
+
+08:04.970 --> 08:13.010
+We're going to call user datt save no user dot save as we know returns a promise which means we can
+
+08:13.010 --> 08:20.680
+call DOT then right here I can pass in my success callback function and all we're going to do is return
+
+08:22.430 --> 08:23.290
+the token.
+
+08:23.300 --> 08:25.230
+This is the variable we defined above.
+
+08:25.340 --> 08:30.960
+And we're going to do this so later on in the server file we can grab the token by tacking on and then
+
+08:30.970 --> 08:37.260
+call back getting access to the token and then responding inside of the callback function.
+
+08:37.420 --> 08:42.430
+Now this then statement and this is going to happen in server genius in order to allow server J.S. to
+
+08:42.430 --> 08:46.900
+chain onto the promise we're going to return it right here.
+
+08:46.900 --> 08:48.940
+Now you might never have seen this done before.
+
+08:48.940 --> 08:53.650
+Usually when you return to chain in a promise you return another promise.
+
+08:53.650 --> 08:57.740
+In this case though we're just returning a value and that is perfectly legal.
+
+08:57.790 --> 09:04.010
+That value will get passed as the success argument for the next then call.
+
+09:04.120 --> 09:08.930
+In our case we are done with the user dot J.S. file and we can move on to server.
+
+09:08.930 --> 09:13.990
+J.S. actually generating the token by calling the method and adding it as a header.
+
+09:14.040 --> 09:16.170
+I'm going to save this file and over in server.
+
+09:16.190 --> 09:22.620
+J.S. we're going to kick things off right inside of our Save callback instead of responding right here.
+
+09:22.630 --> 09:25.010
+We're going to call that method.
+
+09:25.090 --> 09:31.380
+We're going to call user dot generate auth token.
+
+09:31.450 --> 09:34.540
+It doesn't take any arguments so we won't call it with any.
+
+09:34.540 --> 09:39.550
+Then we can go ahead and return it since we know that we're expecting a chaining promise and we can
+
+09:39.550 --> 09:42.210
+tack on a another then call back.
+
+09:42.430 --> 09:47.740
+I'm going to add a second to then call back right here and this is going to get called with the token
+
+09:48.100 --> 09:49.090
+value.
+
+09:49.100 --> 09:54.910
+Now we have everything we need to make the response we have the user and we have the token right here
+
+09:55.120 --> 09:56.050
+inside of our.
+
+09:56.050 --> 09:57.410
+Then a callback function.
+
+09:57.430 --> 10:00.360
+We're going to respond by calling response dot.
+
+10:00.370 --> 10:02.870
+Send sending back the user.
+
+10:03.040 --> 10:04.710
+Now we've already added this part of the code.
+
+10:04.710 --> 10:05.920
+It was done up here.
+
+10:05.920 --> 10:10.930
+And you'll notice the user variable that we sent back is not the same as the user variable defined here
+
+10:11.220 --> 10:12.040
+up above.
+
+10:12.040 --> 10:18.970
+We used the user variable which was the argument to then but this value is identical to the one up here.
+
+10:19.120 --> 10:21.670
+And I don't mean that the actual objects have the same value.
+
+10:21.670 --> 10:27.100
+I mean they're literally the same exact thing in memory which means we can simply remove the argument
+
+10:27.100 --> 10:28.000
+right here.
+
+10:28.000 --> 10:32.280
+This just clears up what's happening it doesn't change the functionality at all.
+
+10:32.290 --> 10:37.060
+Now it's really clear that we can go ahead and send back the user because the only user variable is
+
+10:37.060 --> 10:39.240
+defined right here.
+
+10:39.250 --> 10:45.430
+Next up we have to add on that header we have to send the token back as an HTP response header which
+
+10:45.430 --> 10:46.760
+is the real goal here.
+
+10:46.900 --> 10:52.880
+To do that we call a dot hetter on and the response object hetter takes two arguments.
+
+10:52.990 --> 10:54.530
+The arguments are key value pairs.
+
+10:54.550 --> 11:00.580
+The key is the header name and the value is the value you want to set the header to our header name
+
+11:00.580 --> 11:03.130
+is going to be X hyphen Auth..
+
+11:03.340 --> 11:07.660
+When you prefix a header with X hyphen you're creating a custom hatter.
+
+11:07.720 --> 11:11.770
+Which means it's not necessarily a header that HTP supports by default.
+
+11:11.860 --> 11:17.170
+It's a header that you're using for our specific purposes and our application for example where using
+
+11:17.170 --> 11:19.030
+a JWT token scheme.
+
+11:19.030 --> 11:22.960
+So we're creating a custom header to store that value.
+
+11:22.990 --> 11:28.680
+Next up we can go ahead and pass in the value which is just going to be the token argument up above.
+
+11:28.810 --> 11:35.290
+With this in place we can now remove the old commented out response and we are done in order to test
+
+11:35.290 --> 11:37.150
+that everything is working as expected.
+
+11:37.180 --> 11:42.890
+We're going to start up the server and fire off a few requests over inside of post man.
+
+11:42.910 --> 11:47.900
+I'm going to start up the server by running node server forwards slash server dot.
+
+11:47.900 --> 11:53.380
+J.S. once the server is up on port three thousand we can move in to post man and try to sign up a new
+
+11:53.380 --> 11:54.370
+user.
+
+11:54.370 --> 11:59.280
+I'm going to use the post user's method and I am going to be updating e-mail inside of the body data.
+
+11:59.290 --> 12:05.030
+Since this email is already in use instead of Andrew I'll use Andrew A B C.
+
+12:05.230 --> 12:10.020
+Now I can go ahead and send off this request making sure I'm on the to do app a local environment.
+
+12:10.030 --> 12:11.580
+And what do I get back down below.
+
+12:11.620 --> 12:14.320
+I get back a 200 down below.
+
+12:14.320 --> 12:19.160
+You can see the entire user document which for the moment is a problem that will fix that in a second.
+
+12:19.180 --> 12:21.640
+We have an access value the token value.
+
+12:21.640 --> 12:24.370
+We have a unique ID for this object.
+
+12:24.370 --> 12:28.850
+All inside of the tokens array over inside of the headers tab.
+
+12:28.960 --> 12:34.530
+We can also see the response headers that came back and right here we have our X auth value.
+
+12:34.540 --> 12:40.850
+This is the j w t value that we're going to need to send with our secure requests like posting it to
+
+12:40.850 --> 12:41.080
+do.
+
+12:41.080 --> 12:46.150
+Getting to Doo's or deleting to do's that will be done a little bit later but for now we do indeed have
+
+12:46.150 --> 12:49.090
+the token getting sent back.
+
+12:49.090 --> 12:54.730
+Now one thing we can take care of really quickly is limiting the data that comes back when we convert
+
+12:54.880 --> 12:59.650
+one of our instances one of our users into a Jason value.
+
+12:59.650 --> 13:05.440
+There is a two Jason method available that we can actually override which means we can only send back
+
+13:05.440 --> 13:07.750
+certain values for the case of a user.
+
+13:07.750 --> 13:12.820
+We really only want to send back the ID and the email we should go ahead and leave off things like the
+
+13:12.820 --> 13:14.800
+password and the tokens array.
+
+13:14.800 --> 13:20.650
+These are secure properties that should never ever get sent back to the user because they have no reason
+
+13:20.680 --> 13:26.930
+for them in order to do this over inside of Adam that we're going to override a method previously we
+
+13:26.950 --> 13:32.800
+created a method we created that generate auth token method right here but we can also override ahead
+
+13:33.000 --> 13:36.950
+to update exactly how mongoose handles certain things.
+
+13:37.140 --> 13:43.350
+User schema methods is going to be where we store this method once again and the method is called to
+
+13:43.830 --> 13:45.560
+uppercase Jason.
+
+13:45.870 --> 13:51.300
+This method which we're going to define as a regular function determines what exactly gets sent back
+
+13:51.510 --> 13:56.630
+when a mongoose model is converted into a Chaisson value.
+
+13:56.670 --> 14:02.820
+In our case we're going to first grab the value then we'll use the underscore pick method to actually
+
+14:02.820 --> 14:05.880
+pick off the properties we want to send back.
+
+14:05.970 --> 14:11.760
+First up I'm going to make a variable called user sending an equal to this just like we do for generate
+
+14:11.760 --> 14:19.050
+auth token and then we can go ahead and create a variable called user object the user object as in the
+
+14:19.050 --> 14:28.110
+get set equal to user dot to object user Dom to object is responsible for taking your mongoose variable
+
+14:28.260 --> 14:34.500
+user and converting it into a regular object where only the properties available on the document exist.
+
+14:34.560 --> 14:38.900
+Now that we have this user object variable we can use pick.
+
+14:39.000 --> 14:46.620
+I'm going to return a low dash dot pick picking off some properties from the user object and the properties
+
+14:46.620 --> 14:51.690
+that we'll be picking off will be inside of the array underscore ID.
+
+14:52.050 --> 14:54.070
+And as the second item in the array.
+
+14:54.220 --> 14:59.430
+Email this means we'll be leaving off things like the password and the tokens array which should not
+
+14:59.430 --> 15:00.620
+get returned.
+
+15:00.780 --> 15:05.590
+And we are going to need to import load ash up above since we're using the pick method.
+
+15:05.760 --> 15:11.190
+Konst underscore equals require low dash.
+
+15:11.330 --> 15:12.150
+Awesome.
+
+15:12.170 --> 15:17.120
+Now we can go ahead and restart the server and making new Sign-Up request and see what data comes back
+
+15:17.120 --> 15:17.390
+in.
+
+15:17.390 --> 15:23.300
+The response body over in the terminal I give my server a quick restart then inside of postman I can
+
+15:23.300 --> 15:29.270
+go ahead and change the e-mail to something that doesn't exist like ABC C send off the request and down
+
+15:29.270 --> 15:30.450
+below we get it 200.
+
+15:30.590 --> 15:34.210
+And this time we get a trimmed version of the document.
+
+15:34.250 --> 15:38.960
+We only get back the user id and the e-mail which is exactly what we wanted.
+
+15:39.170 --> 15:43.400
+Over inside of the headers section we do still get back the token which is great.
+
+15:43.430 --> 15:46.820
+This is what the user is going to need in order to authenticate later.
+
+15:47.030 --> 15:52.540
+With this in place we are now done the same method is looking great and knows how to sign up users and
+
+15:52.540 --> 15:55.430
+it knows how to generate these auth tokens.
+
+15:55.430 --> 16:01.250
+Since we have something meaningful complete Let's go ahead and make a commit to our Get repository over
+
+16:01.250 --> 16:02.720
+inside of the terminal.
+
+16:02.720 --> 16:07.400
+I'm going to shut down the server and run get status right here.
+
+16:07.400 --> 16:11.450
+You can see we have our changed files as well as our new file.
+
+16:11.450 --> 16:16.820
+I'm going to run and get added to add all of those to the next commit and get commit to actually make
+
+16:16.880 --> 16:25.910
+that commit and post users route and tokin method.
+
+16:26.080 --> 16:30.720
+Once the commit is made we can go ahead and push it up to get Haab going to avoid deploying to Heroku
+
+16:30.730 --> 16:35.780
+for the moment since there's nothing Heroku specific we need to test out yet will deploy to her Al-Q
+
+16:35.800 --> 16:38.860
+a little later when we actually have a couple route's complete.
+
+16:38.980 --> 16:42.970
+That is it for this one I will see you next time as we continue on with authentication
